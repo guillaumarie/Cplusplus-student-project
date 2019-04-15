@@ -184,10 +184,16 @@ void Graphe::algoPrim()
     // à ce niveau, les aretes de l'arbre de poids minimum
     std::cout<<"Arbre couvrant de poids 1 minimum"<<std::endl<<std::endl;
     for(auto a:m_aretesPrim1)
-        a->afficher1();
+    {
+        poids1=a->getPoids1();
+        a->afficher(poids1);
+    }
     std::cout<<std::endl<<std::endl<<"Arbre couvrant de poids 2 minimum"<<std::endl<<std::endl;
     for(auto b:m_aretesPrim2)
-        b->afficher2();
+    {
+        poids2=b->getPoids2();
+        b->afficher(poids2);
+    }
 }
 
 /// _________________________________________________________________
