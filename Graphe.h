@@ -13,18 +13,15 @@ class Graphe
         std::vector<Sommet*> m_sommets;
         std::vector<Arete*> m_aretes;
         std::vector<Sommet*> m_sommetsPrim;
-        std::vector<Arete*> m_arretesPrim;
+        std::vector<Arete*> m_aretesPrim;
 
 
     public :
         //faire prim
         Graphe(std::string nomFichierCoord, std::string nomFichierPoids);
         Graphe();
-        void algoPrim(int& indice);
+        void algoPrim();
         ~Graphe();
-
-
-
 
 };
 
