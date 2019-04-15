@@ -4,18 +4,20 @@
 
 class Arete
 {
-
     private :
-        int m_poids;
+        int m_idArete;
         int m_id1;
         int m_id2;
+        float m_poids1;
+        float m_poids2;
 
     public :
-        Arete(int id1,int id2,int poids);
+        Arete(int idArete, int id1, int id2, float poids1, float poids2);
         int getId1(){return m_id1;};
         int getId2(){return m_id2;};
-        int getPoids(){return m_poids;};
-        void afficher();
+        int getPoids1(){return m_poids1;};
+        int getPoids2(){return m_poids2;};
+        void afficher(float poids);
         ~Arete();
 
 };
