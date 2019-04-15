@@ -94,23 +94,23 @@ void Graphe::algoPrim()
     bool decouverts = true;
     float poids1, poids2;
 
-    m_sommets[0]->marquer();
+    m_sommets[0]->marquer1();
+    m_sommets[0]->marquer2();
 
     do //tant que tous les sommets ne sont pas tous découverts
     {
-
-        //parcourir toutes les arretes et garder celle qui a le plus petit poids parmis celles qui ont le sommet choisi comme extrémité
+        //parcourir toutes les aretes et garder celle qui a le plus petit poids parmis celles qui ont le sommet choisi comme extrémité
         Arete* meilleureArete=nullptr;
         poids1 = 10000.0;
         poids2 = 10000.0;
 
-        for(auto j:m_aretes)
+        for(auto j:m_aretes)        // Parcours graphe pour poids 1
         {
             int s1 = j->getId1(); //indice du sommet
             int s2 = j->getId2();
 
-            if (   ( m_sommets[s1]->getMarque() && !m_sommets[s2]->getMarque())
-                    || ( m_sommets[s2]->getMarque() && !m_sommets[s1]->getMarque())  )
+            if (   ( m_sommets[s1]->getMarque1() && !m_sommets[s2]->getMarque1())
+                    || ( m_sommets[s2]->getMarque1() && !m_sommets[s1]->getMarque1())  )
             {
                 if (j->getPoids1() < poids1)
                 {
@@ -124,22 +124,56 @@ void Graphe::algoPrim()
         int s1 = meilleureArete->getId1();
         int s2 = meilleureArete->getId2();
 
-        if (  m_sommets[s1]->getMarque() && !m_sommets[s2]->getMarque() )
+        if (  m_sommets[s1]->getMarque1() && !m_sommets[s2]->getMarque1() )
         {
-            m_sommets[s2]->marquer();
+            m_sommets[s2]->marquer1();
         }
-        if (  m_sommets[s2]->getMarque() && !m_sommets[s1]->getMarque() )
+        if (  m_sommets[s2]->getMarque1() && !m_sommets[s1]->getMarque1() )
         {
-            m_sommets[s1]->marquer();
+            m_sommets[s1]->marquer1();
         }
 
-        m_aretesPrim.push_back(meilleureArete);
+        m_aretesPrim1.push_back(meilleureArete);
+
+
+
+        for(auto j:m_aretes)        // Parcours pour poids 2
+        {
+            int s1 = j->getId1(); //indice du sommet
+            int s2 = j->getId2();
+
+            if (   ( m_sommets[s1]->getMarque2() && !m_sommets[s2]->getMarque2())
+                    || ( m_sommets[s2]->getMarque2() && !m_sommets[s1]->getMarque2())  )
+            {
+                if (j->getPoids2() < poids2)
+                {
+                    poids2 = j->getPoids2();
+                    meilleureArete = j;
+                }
+            }
+        }
+
+        // à ce niveau, meilleureArete est l'arete de poids min
+        s1 = meilleureArete->getId1();
+        s2 = meilleureArete->getId2();
+
+        if (  m_sommets[s1]->getMarque2() && !m_sommets[s2]->getMarque2() )
+        {
+            m_sommets[s2]->marquer2();
+        }
+        if (  m_sommets[s2]->getMarque2() && !m_sommets[s1]->getMarque2() )
+        {
+            m_sommets[s1]->marquer2();
+        }
+
+        m_aretesPrim2.push_back(meilleureArete);
+
 
         // --- vérif sortie boucle while
         decouverts = true;
         for(auto i:m_sommets) //on parcours tous les sommets
         {
-            if(i->getMarque() == false)
+            if(i->getMarque1() == false || i->getMarque2() == false)
                 decouverts = false; //si on en trouve un qui n'est pas marqué on passe le découvert total à false
         }
         // --- fin vérif sortie boucle while
@@ -148,9 +182,12 @@ void Graphe::algoPrim()
     while(decouverts == false);
 
     // à ce niveau, les aretes de l'arbre de poids minimum
-    for(auto a:m_aretesPrim)
-        a->afficher();
-
+    std::cout<<"Arbre couvrant de poids 1 minimum"<<std::endl<<std::endl;
+    for(auto a:m_aretesPrim1)
+        a->afficher1();
+    std::cout<<std::endl<<std::endl<<"Arbre couvrant de poids 2 minimum"<<std::endl<<std::endl;
+    for(auto b:m_aretesPrim2)
+        b->afficher2();
 }
 
 /// _________________________________________________________________

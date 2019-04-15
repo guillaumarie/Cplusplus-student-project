@@ -11,7 +11,12 @@ Arete::~Arete()
 {}
 
 
-void Arete::afficher()
+void Arete::afficher1()
 {
-    std::cout << "arete entre les sommets " << m_id2 << " et " << m_id1 << " de poids " << m_poids1 << std::endl;
+    std::cout << "Arete entre les sommets " << m_id1 << " et " << m_id2 << " de poids " << m_poids1 << std::endl;
+}
+
+void Arete::afficher2()
+{
+    std::cout << "Arete entre les sommets " << m_id1 << " et " << m_id2 << " de poids " << m_poids2 << std::endl;
 }

@@ -17,7 +17,8 @@ class Arete
         int getId2(){return m_id2;};
         int getPoids1(){return m_poids1;};
         int getPoids2(){return m_poids2;};
-        void afficher();
+        void afficher1();
+        void afficher2();
         ~Arete();
 
 };

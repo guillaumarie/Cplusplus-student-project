@@ -12,8 +12,8 @@ class Graphe
     private :
         std::vector<Sommet*> m_sommets;
         std::vector<Arete*> m_aretes;
-        std::vector<Sommet*> m_sommetsPrim;
-        std::vector<Arete*> m_aretesPrim;
+        std::vector<Arete*> m_aretesPrim1;
+        std::vector<Arete*> m_aretesPrim2;
 
 
     public :
