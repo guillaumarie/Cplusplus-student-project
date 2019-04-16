@@ -182,18 +182,29 @@ void Graphe::algoPrim()
     while(decouverts == false);
 
     // à ce niveau, les aretes de l'arbre de poids minimum
+    int poids1Tot=0, poids2Tot=0;
     std::cout<<"Arbre couvrant de poids 1 minimum"<<std::endl<<std::endl;
     for(auto a:m_aretesPrim1)
     {
         poids1=a->getPoids1();
+        poids2=a->getPoids2();
         a->afficher(poids1);
+        poids1Tot=poids1Tot+poids1;
+        poids2Tot=poids2Tot+poids2;
     }
-    std::cout<<std::endl<<std::endl<<"Arbre couvrant de poids 2 minimum"<<std::endl<<std::endl;
+    std::cout<<std::endl<<"Poids totaux de l'arbre de poids 1 minimum : ("<<poids1Tot<<";"<<poids2Tot<<")"<<std::endl<<std::endl;
+    poids1Tot=0;
+    poids2Tot=0;
+    std::cout<<"Arbre couvrant de poids 2 minimum"<<std::endl<<std::endl;
     for(auto b:m_aretesPrim2)
     {
+        poids1=b->getPoids1();
         poids2=b->getPoids2();
         b->afficher(poids2);
+        poids1Tot=poids1Tot+poids1;
+        poids2Tot=poids2Tot+poids2;
     }
+    std::cout<<std::endl<<"Poids totaux de l'arbre de poids 1 minimum : ("<<poids1Tot<<";"<<poids2Tot<<")"<<std::endl;
 }
 
 /// _________________________________________________________________
