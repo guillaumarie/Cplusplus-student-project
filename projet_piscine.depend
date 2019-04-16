@@ -27,3 +27,43 @@
 1555402107 source:c:\users\guillaume\documents\ece paris\ing 2\cours\info\semestre 2\projet piscine\projet-piscine\graphe.cpp
 	"Graphe.h"
 
+1555406477 source:c:\users\jasmine\desktop\piscine\projet-piscine\arete.cpp
+	"Arete.h"
+
+1555406477 c:\users\jasmine\desktop\piscine\projet-piscine\arete.h
+	<iostream>
+
+1555440315 source:c:\users\jasmine\desktop\piscine\projet-piscine\graphe.cpp
+	"Graphe.h"
+
+1555439867 c:\users\jasmine\desktop\piscine\projet-piscine\graphe.h
+	<fstream>
+	"Sommet.h"
+	"Arete.h"
+	<string>
+	<vector>
+	<allegro.h>
+
+1555439867 c:\users\jasmine\desktop\piscine\projet-piscine\sommet.h
+
+1555439867 source:c:\users\jasmine\desktop\piscine\projet-piscine\sommet.cpp
+	"Sommet.h"
+
+1555406764 source:c:\users\jasmine\desktop\piscine\projet-piscine\svg.cpp
+	"SVG.h"
+
+1555427334 c:\users\jasmine\desktop\piscine\projet-piscine\svg.h
+	<iostream>
+	<sstream>
+
+1555439964 source:c:\users\jasmine\desktop\piscine\projet-piscine\main.cpp
+	<iostream>
+	"Graphe.h"
+	"Sommet.h"
+	"Arete.h"
+	<vector>
+	<math.h>
+	<fstream>
+	<string>
+	<allegro.h>
+

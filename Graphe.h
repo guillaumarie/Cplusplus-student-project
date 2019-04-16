@@ -6,7 +6,7 @@
 #include "Arete.h"
 #include <string>
 #include <vector>
-
+#include <allegro.h>
 class Graphe
 {
     private :
@@ -22,6 +22,8 @@ class Graphe
         Graphe();
         void algoPrim();
         ~Graphe();
+        void placerSommets();
+
 
 };
 

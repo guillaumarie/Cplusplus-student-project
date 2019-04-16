@@ -213,3 +213,13 @@ void Graphe::algoPrim()
 Graphe::~Graphe()
 {}
 
+void Graphe::placerSommets()
+{
+    for(const auto& it : m_sommets)
+    {
+        circlefill(screen, it->get_x(), it->get_y(),8,makecol(220,181,255));
+        textprintf_ex(screen,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId());
+    }
+
+    }
+
