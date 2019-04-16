@@ -15,12 +15,12 @@ class Graphe
         std::vector<Arete*> m_aretesPrim1;
         std::vector<Arete*> m_aretesPrim2;
 
-
     public :
         //faire prim
         Graphe(std::string nomFichierCoord, std::string nomFichierPoids);
         Graphe();
-        void algoPrim();
+        std::vector<Arete*> algoPrim();
+        void algoPareto();
         ~Graphe();
 
 };

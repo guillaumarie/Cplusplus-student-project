@@ -14,8 +14,10 @@ class Sommet
     public : //méthodes
         Sommet(int id, double x, double y);
         int getId(){return m_id;};
-        int getMarque1(){return m_marque1;};
-        int getMarque2(){return m_marque2;};
+        int getX(){return m_x;};
+        int getY(){return m_y;};
+        int getMarque1(){return m_marque1;};        // Marque pour le poids 1
+        int getMarque2(){return m_marque2;};        // Marque pour le poids 2
         void marquer1(){m_marque1=true;};
         void marquer2(){m_marque2=true;};
         ~Sommet();

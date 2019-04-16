@@ -1,4 +1,7 @@
 #include "Graphe.h"
+#include <math.h>
+#include <unordered_map>
+
 
 /// CONSTRUCTEUR + RECUPERATION DONNEES FICHIER ____________________________
 
@@ -92,6 +95,7 @@ Graphe::Graphe(std::string nomFichierCoord, std::string nomFichierPoids)
 void Graphe::algoPrim()
 {
     bool decouverts = true;
+    int id1,x1,y1,id2,x2,y2;
     float poids1, poids2;
 
     m_sommets[0]->marquer1();
@@ -104,13 +108,16 @@ void Graphe::algoPrim()
         poids1 = 10000.0;
         poids2 = 10000.0;
 
-        for(auto j:m_aretes)        // Parcours graphe pour poids 1
-        {
-            int s1 = j->getId1(); //indice du sommet
-            int s2 = j->getId2();
 
-            if (   ( m_sommets[s1]->getMarque1() && !m_sommets[s2]->getMarque1())
-                    || ( m_sommets[s2]->getMarque1() && !m_sommets[s1]->getMarque1())  )
+        /// Parcours pour poids 2
+
+        for(auto j:m_aretes)
+        {
+            id1 = j->getId1(); //indice du sommet
+            id2 = j->getId2();
+
+            if (   ( m_sommets[id1]->getMarque1() && !m_sommets[id2]->getMarque1())
+                    || ( m_sommets[id2]->getMarque1() && !m_sommets[id1]->getMarque1())  )
             {
                 if (j->getPoids1() < poids1)
                 {
@@ -121,29 +128,36 @@ void Graphe::algoPrim()
         }
 
         // à ce niveau, meilleureArete est l'arete de poids min
-        int s1 = meilleureArete->getId1();
-        int s2 = meilleureArete->getId2();
+        id1 = meilleureArete->getId1();
+        id2 = meilleureArete->getId2();
 
-        if (  m_sommets[s1]->getMarque1() && !m_sommets[s2]->getMarque1() )
+        if (  m_sommets[id1]->getMarque1() && !m_sommets[id2]->getMarque1() )
         {
-            m_sommets[s2]->marquer1();
+            m_sommets[id2]->marquer1();
         }
-        if (  m_sommets[s2]->getMarque1() && !m_sommets[s1]->getMarque1() )
+        if (  m_sommets[id2]->getMarque1() && !m_sommets[id1]->getMarque1() )
         {
-            m_sommets[s1]->marquer1();
+            m_sommets[id1]->marquer1();
         }
 
-        m_aretesPrim1.push_back(meilleureArete);
+        x1 = m_sommets[id1]->getX();
+        y1 = m_sommets[id1]->getY();
+        x2 = m_sommets[id2]->getX();
+        y2 = m_sommets[id2]->getY();
+
+        m_aretesPrim1.push_back(id1,x1,y1,id2,x2,y2,poids1,poids2);
 
 
 
-        for(auto j:m_aretes)        // Parcours pour poids 2
+        /// Parcours pour poids 2
+
+        for(auto j:m_aretes)
         {
-            int s1 = j->getId1(); //indice du sommet
-            int s2 = j->getId2();
+            id1 = j->getId1(); //indice du sommet
+            id2 = j->getId2();
 
-            if (   ( m_sommets[s1]->getMarque2() && !m_sommets[s2]->getMarque2())
-                    || ( m_sommets[s2]->getMarque2() && !m_sommets[s1]->getMarque2())  )
+            if (   ( m_sommets[id1]->getMarque2() && !m_sommets[id2]->getMarque2())
+                    || ( m_sommets[id2]->getMarque2() && !m_sommets[id1]->getMarque2())  )
             {
                 if (j->getPoids2() < poids2)
                 {
@@ -154,19 +168,24 @@ void Graphe::algoPrim()
         }
 
         // à ce niveau, meilleureArete est l'arete de poids min
-        s1 = meilleureArete->getId1();
-        s2 = meilleureArete->getId2();
+        id1 = meilleureArete->getId1();
+        id2 = meilleureArete->getId2();
 
-        if (  m_sommets[s1]->getMarque2() && !m_sommets[s2]->getMarque2() )
+        if (  m_sommets[id1]->getMarque2() && !m_sommets[id2]->getMarque2() )
         {
-            m_sommets[s2]->marquer2();
+            m_sommets[id2]->marquer2();
         }
-        if (  m_sommets[s2]->getMarque2() && !m_sommets[s1]->getMarque2() )
+        if (  m_sommets[id2]->getMarque2() && !m_sommets[id1]->getMarque2() )
         {
-            m_sommets[s1]->marquer2();
+            m_sommets[id1]->marquer2();
         }
 
-        m_aretesPrim2.push_back(meilleureArete);
+        x1 = m_sommets[id1]->getX();
+        y1 = m_sommets[id1]->getY();
+        x2 = m_sommets[id2]->getX();
+        y2 = m_sommets[id2]->getY();
+
+        m_aretesPrim2.push_back(id1,x1,y1,id2,x2,y2,poids1,poids2);
 
 
         // --- vérif sortie boucle while
@@ -183,32 +202,63 @@ void Graphe::algoPrim()
 
     // à ce niveau, les aretes de l'arbre de poids minimum
     int poids1Tot=0, poids2Tot=0;
-    std::cout<<"Arbre couvrant de poids 1 minimum"<<std::endl<<std::endl;
     for(auto a:m_aretesPrim1)
     {
         poids1=a->getPoids1();
         poids2=a->getPoids2();
-        a->afficher(poids1);
         poids1Tot=poids1Tot+poids1;
         poids2Tot=poids2Tot+poids2;
     }
-    std::cout<<std::endl<<"Poids totaux de l'arbre de poids 1 minimum : ("<<poids1Tot<<";"<<poids2Tot<<")"<<std::endl<<std::endl;
+
     poids1Tot=0;
     poids2Tot=0;
-    std::cout<<"Arbre couvrant de poids 2 minimum"<<std::endl<<std::endl;
     for(auto b:m_aretesPrim2)
     {
         poids1=b->getPoids1();
         poids2=b->getPoids2();
-        b->afficher(poids2);
         poids1Tot=poids1Tot+poids1;
         poids2Tot=poids2Tot+poids2;
     }
-    std::cout<<std::endl<<"Poids totaux de l'arbre de poids 1 minimum : ("<<poids1Tot<<";"<<poids2Tot<<")"<<std::endl;
 }
 
 /// _________________________________________________________________
 
+void Graphe::algoPareto()
+{
+    int nombre = m_aretes.size();
+    int numeroPossibilite=0;
+    int exposant=0,reste=0;
+    std::vector<int> nombreBinaire;
+    std::unordered_map<int,std::vector<int>> possibilites;
+    for(int i=0; i<nombre; ++i )
+    {
+        numeroPossibilite=i;
+        // On commence par créer une liste en binaire, chaque indice correspondant à une arête
+        exposant=0,reste=0;
+        while (pow(2,exposant) < numeroPossibilite)      // Tant que la puissance de 2 ne peut pas contenir le nombre bits
+            ++exposant;
+        do
+        {
+            reste=numeroPossibilite%2;             // On calcule son reste dans la division euclidienne par 2
+            nombreBinaire.push_back(reste);
+            nombre = numeroPossibilite/2;
+        }while(numeroPossibilite >= 2);               // Tant que le nombre est supérieur à 2
+
+        nombreBinaire.push_back(numeroPossibilite);
+        possibilites.insert({i,nombreBinaire});
+    }
+    for(size_t k=0; k<possibilites.size(); ++k)
+    {
+        auto search = possibilites.find(k);
+        if (search != possibilites.end())
+
+            std::cout<<"Found "<<search->first<<" "<<std::endl;
+        else
+            std::cout<<"Not found"<<std::endl;
+    }
+}
+
+/// _________________________________________________________________
 
 Graphe::~Graphe()
 {}

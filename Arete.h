@@ -13,6 +13,7 @@ class Arete
 
     public :
         Arete(int idArete, int id1, int id2, float poids1, float poids2);
+        int getIdArete(){return m_idArete;};
         int getId1(){return m_id1;};
         int getId2(){return m_id2;};
         int getPoids1(){return m_poids1;};
