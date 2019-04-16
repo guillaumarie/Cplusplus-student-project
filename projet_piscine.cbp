@@ -34,6 +34,8 @@
 		</Compiler>
 		<Unit filename="Arete.cpp" />
 		<Unit filename="Arete.h" />
+		<Unit filename="Binaire.cpp" />
+		<Unit filename="Binaire.h" />
 		<Unit filename="Graphe.cpp" />
 		<Unit filename="Graphe.h" />
 		<Unit filename="Sommet.cpp" />
