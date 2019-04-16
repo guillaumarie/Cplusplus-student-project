@@ -1,5 +1,9 @@
 #ifndef SOMMET_H_INCLUDED
 #define SOMMET_H_INCLUDED
+#include <queue>
+#include <string>
+#include <vector>
+#include <unordered_set>
 
 class Sommet
 {
@@ -20,7 +24,23 @@ class Sommet
         int getMarque2(){return m_marque2;};        // Marque pour le poids 2
         void marquer1(){m_marque1=true;};
         void marquer2(){m_marque2=true;};
+        std::unordered_set<std::string> rechercherCC() const;
+        std::string geterId() const {return m_id;};
+        std::vector<const Sommet*> geterVoisins() const {return m_voisins;};
         ~Sommet();
 
 };
 #endif // SOMMET_H_INCLUDED
+
+
+    private:
+        /// Voisinage : liste d'adjacence
+        std::vector<const Sommet*> m_voisins; // tableau contenant les sommets voisins
+
+        /// Données spécifiques du sommet
+        std::string m_id; // Identifiant / clé
+        double m_x, m_y; // Position
+
+};
+
+#endif // SOMMET_H

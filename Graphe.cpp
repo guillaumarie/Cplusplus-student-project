@@ -8,17 +8,17 @@
 Graphe::Graphe(std::string nomFichierCoord, std::string nomFichierPoids)
 {
     std::ifstream coord{nomFichierCoord};
-    int ordre, taille1, taille2;
+    int taille1, taille2;
     if (!coord)
         throw std::runtime_error( "Impossible d'ouvrir en lecture " + nomFichierCoord );
-    coord >> ordre;
+    coord >> m_ordre;
     if ( coord.fail() )
         throw std::runtime_error("Probleme lecture ordre du graphe");
 
     int id;
     double x,y;
     //lecture des sommets
-    for (int i=0; i<ordre; ++i)
+    for (int i=0; i<m_ordre; ++i)
     {
         coord>>id;
         if(coord.fail())
@@ -95,7 +95,7 @@ Graphe::Graphe(std::string nomFichierCoord, std::string nomFichierPoids)
 void Graphe::algoPrim()
 {
     bool decouverts = true;
-    int id1,x1,y1,id2,x2,y2;
+    int id1,id2;
     float poids1, poids2;
 
     m_sommets[0]->marquer1();
@@ -140,12 +140,7 @@ void Graphe::algoPrim()
             m_sommets[id1]->marquer1();
         }
 
-        x1 = m_sommets[id1]->getX();
-        y1 = m_sommets[id1]->getY();
-        x2 = m_sommets[id2]->getX();
-        y2 = m_sommets[id2]->getY();
-
-        m_aretesPrim1.push_back(id1,x1,y1,id2,x2,y2,poids1,poids2);
+        m_aretesPrim1.push_back(meilleureArete);
 
 
 
@@ -180,12 +175,7 @@ void Graphe::algoPrim()
             m_sommets[id1]->marquer2();
         }
 
-        x1 = m_sommets[id1]->getX();
-        y1 = m_sommets[id1]->getY();
-        x2 = m_sommets[id2]->getX();
-        y2 = m_sommets[id2]->getY();
-
-        m_aretesPrim2.push_back(id1,x1,y1,id2,x2,y2,poids1,poids2);
+        m_aretesPrim2.push_back(meilleureArete);
 
 
         // --- vérif sortie boucle while
@@ -201,23 +191,20 @@ void Graphe::algoPrim()
     while(decouverts == false);
 
     // à ce niveau, les aretes de l'arbre de poids minimum
-    int poids1Tot=0, poids2Tot=0;
     for(auto a:m_aretesPrim1)
     {
         poids1=a->getPoids1();
         poids2=a->getPoids2();
-        poids1Tot=poids1Tot+poids1;
-        poids2Tot=poids2Tot+poids2;
+        m_poids1Tot1=m_poids1Tot1+poids1;
+        m_poids2Tot1=m_poids2Tot1+poids2;
     }
 
-    poids1Tot=0;
-    poids2Tot=0;
     for(auto b:m_aretesPrim2)
     {
         poids1=b->getPoids1();
         poids2=b->getPoids2();
-        poids1Tot=poids1Tot+poids1;
-        poids2Tot=poids2Tot+poids2;
+        m_poids1Tot2=m_poids1Tot2+poids1;
+        m_poids2Tot2=m_poids2Tot2+poids2;
     }
 }
 
@@ -229,7 +216,8 @@ void Graphe::algoPareto()
     int numeroPossibilite=0;
     int exposant=0,reste=0;
     std::vector<int> nombreBinaire;
-    std::unordered_map<int,std::vector<int>> possibilites;
+    std::vector<Arete*> aretesSelectionnees;
+    //std::unordered_map<int,std::vector<int>> possibilites;
     for(int i=0; i<nombre; ++i )
     {
         numeroPossibilite=i;
@@ -242,11 +230,29 @@ void Graphe::algoPareto()
             reste=numeroPossibilite%2;             // On calcule son reste dans la division euclidienne par 2
             nombreBinaire.push_back(reste);
             nombre = numeroPossibilite/2;
-        }while(numeroPossibilite >= 2);               // Tant que le nombre est supérieur à 2
+        }
+        while(numeroPossibilite >= 2);                // Tant que le nombre est supérieur à 2
 
         nombreBinaire.push_back(numeroPossibilite);
-        possibilites.insert({i,nombreBinaire});
+        //possibilites.insert({i,nombreBinaire});
+
+
+        for(size_t j=0; j<nombreBinaire.size(); ++j)
+        {
+            if(nombreBinaire[nombreBinaire.size()-j] == 1)        // Si l'élément est égal à 1
+                aretesSelectionnees.insert(m_aretes[j]);        // On l'ajoute au vecteurs d'arêtes séléctionnées
+
+            if(aretesSelectionnees.size() == m_ordre-1)         // Si le nombre d'arêtes est égal à l'ordre-1
+            {
+
+            }
+        }
+
+        nombreBinaire.erase();
     }
+
+
+    /*
     for(size_t k=0; k<possibilites.size(); ++k)
     {
         auto search = possibilites.find(k);
@@ -256,6 +262,7 @@ void Graphe::algoPareto()
         else
             std::cout<<"Not found"<<std::endl;
     }
+    */
 }
 
 /// _________________________________________________________________

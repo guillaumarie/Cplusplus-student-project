@@ -14,12 +14,18 @@ class Graphe
         std::vector<Arete*> m_aretes;
         std::vector<Arete*> m_aretesPrim1;
         std::vector<Arete*> m_aretesPrim2;
+        int m_ordre;
+        int m_poids1Tot1;           // Total du poids 1 pour Prim poids 1
+        int m_poids2Tot1;           // Total du poids 2 pour Prim poids 1
+        int m_poids1Tot2;           // Total du poids 1 pour Prim poids 2
+        int m_poids2Tot2;           // Total du poids 2 pour Prim poids 2
+
 
     public :
         //faire prim
         Graphe(std::string nomFichierCoord, std::string nomFichierPoids);
         Graphe();
-        std::vector<Arete*> algoPrim();
+        void algoPrim();
         void algoPareto();
         ~Graphe();
 
