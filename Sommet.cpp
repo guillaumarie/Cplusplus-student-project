@@ -22,7 +22,7 @@ void Sommet::ajouterVoisin(Sommet* voisin){
 
 int Sommet::verifierCC()
 {
-    std::unordered_set<const Sommet*> decouvert;
+    std::unordered_set<Sommet*> decouvert;
     std::queue<Sommet*> file;
     std::vector<Sommet*> voisins;
     int cc = 1;
@@ -37,12 +37,12 @@ int Sommet::verifierCC()
         s = file.front();           // lecture du premier élément de la file
         file.pop();                 // on enleve le sommet s de la file apres l'avoir marqué = l'avoir ajouté dans le unordered_map
         voisins = s->getVoisins();
-        for(size_t i = 0; i<voisins.size(); i++)
+        for(auto v:voisins)
         {
-            if((decouvert.count(voisins[i]))==0) //si le voisin n'est pas découvert
+            if( (decouvert.count(v)) == 0) //si le voisin n'est pas découvert
             {
-                file.push(voisins[i]);           //alors on ajoute tous les voisins à la file
-                decouvert.insert(voisins[i]);       //on le marque comme exploré
+                file.push(v);           //alors on ajoute tous les voisins à la file
+                decouvert.insert(v);       //on le marque comme exploré
                 ++cc;
             }
         }

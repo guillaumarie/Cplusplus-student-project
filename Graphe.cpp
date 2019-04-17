@@ -109,7 +109,7 @@ void Graphe::algoPrim()
         poids2 = 10000.0;
 
 
-        /// Parcours pour poids 2
+        /// Parcours pour poids 1
 
         for(auto j:m_aretes)
         {
@@ -238,9 +238,9 @@ void Graphe::algoPareto()
 
         /// Calcul du nombre d'arêtes
         nombreAretes = 0;
-        for(int j=0; j<nombreBinaire.size(); ++j)        // Parcours des 0 et 1 du vecteur nombreBinaire (pour étudier les arêtes sélectionnées)
+        for(auto n:nombreBinaire)       // Parcours des 0 et 1 du vecteur nombreBinaire (pour étudier les arêtes sélectionnées)
         {
-            if(nombreBinaire[j] == 1)        // Si l'élément est égal à 1
+            if(n == 1)        // Si l'élément est égal à 1
                 ++nombreAretes;            // On incrémente le nombre de 1 dans le nombre binaire (donc le nombre d'arêtes sélectionnées)
         }
 
@@ -252,11 +252,11 @@ void Graphe::algoPareto()
         {
             for(int j=0; j<nombreBinaire.size(); ++j)        // Parcours de tous les éléments (0 ou 1) du nombre binaire
             {
-                if(nombreBinaire[nombreBinaire.size()-1-j] == 1)      // Si l'élément du nombre binaire est égal à 1
+                if(nombreBinaire[j] == 1)      // Si l'élément du nombre binaire est égal à 1
                 {
-                    idSelectionnes.push_back( m_aretes[nombreBinaire.size()-1-j]->getIdArete() );
-                    id1 = m_aretes[nombreBinaire.size()-1-j]->getId1();
-                    id2 = m_aretes[nombreBinaire.size()-1-j]->getId2();
+                    idSelectionnes.push_back( m_aretes[j]->getIdArete() );
+                    id1 = m_aretes[j]->getId1();
+                    id2 = m_aretes[j]->getId2();
                     m_sommets[id1]->ajouterVoisin(m_sommets[id2]);          // On ajoute le sommet id2 aux voisins de id1
                     m_sommets[id2]->ajouterVoisin(m_sommets[id1]);          // On ajoute le sommet id1 aux voisins de id2
                 }
@@ -264,17 +264,18 @@ void Graphe::algoPareto()
             cc = m_sommets[0]->verifierCC();        // Recherche des composantes connexes à partir du sommet 0 (n'importe quel sommet)
             if(cc == m_ordre)      // Si tous les sommest sont dans la composante connexe au départ de n'importe quel sommet (ici : 0)
             {
-                for(size_t j=0; j<m_ordre-1; ++j)       // On parcourt tous les idSelectionnés
+                for(int j=0; j<m_ordre-1; ++j)       // On parcourt tous les idSelectionnés
                 {
                     aretesSelectionnees.push_back(m_aretes[j]);       // On l'ajoute au vecteurs d'arêtes séléctionnées
                 }
-                std::cout<<"Solution "<<i<<std::endl;
+                /*std::cout<<"Solution "<<i<<std::endl;
                 for(int j=0; j<m_ordre-1; ++j)
                 {
                     int id=idSelectionnes[j];
                     std::cout<<id<<std::endl;
                 }
-                std::cout<<std::endl;
+                std::cout<<std::endl;*/
+
                 idSelectionnes.clear();
                 aretesSelectionnees.clear();
             }
