@@ -36,8 +36,6 @@
 		<Unit filename="Arete.h" />
 		<Unit filename="Graphe.cpp" />
 		<Unit filename="Graphe.h" />
-		<Unit filename="SVG.cpp" />
-		<Unit filename="SVG.h" />
 		<Unit filename="Sommet.cpp" />
 		<Unit filename="Sommet.h" />
 		<Unit filename="main.cpp" />

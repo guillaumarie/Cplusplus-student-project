@@ -77,8 +77,6 @@ Graphe::Graphe(std::string nomFichierCoord, std::string nomFichierPoids)
             m_aretes.push_back(new Arete{idArete,id1,id2,poids1,poids2});
         }
     }
-    else
-        std::cout<<"Le fichier poids ne correspond pas au fichier de coordonnées de sommets"<<std::endl;
 }
 
 
@@ -183,7 +181,6 @@ void Graphe::algoPrim()
 
     // à ce niveau, les aretes de l'arbre de poids minimum
     int poids1Tot=0, poids2Tot=0;
-    std::cout<<"Arbre couvrant de poids 1 minimum"<<std::endl<<std::endl;
     for(auto a:m_aretesPrim1)
     {
         poids1=a->getPoids1();
@@ -192,10 +189,8 @@ void Graphe::algoPrim()
         poids1Tot=poids1Tot+poids1;
         poids2Tot=poids2Tot+poids2;
     }
-    std::cout<<std::endl<<"Poids totaux de l'arbre de poids 1 minimum : ("<<poids1Tot<<";"<<poids2Tot<<")"<<std::endl<<std::endl;
     poids1Tot=0;
     poids2Tot=0;
-    std::cout<<"Arbre couvrant de poids 2 minimum"<<std::endl<<std::endl;
     for(auto b:m_aretesPrim2)
     {
         poids1=b->getPoids1();
@@ -204,7 +199,6 @@ void Graphe::algoPrim()
         poids1Tot=poids1Tot+poids1;
         poids2Tot=poids2Tot+poids2;
     }
-    std::cout<<std::endl<<"Poids totaux de l'arbre de poids 1 minimum : ("<<poids1Tot<<";"<<poids2Tot<<")"<<std::endl;
 }
 
 /// _________________________________________________________________
@@ -213,14 +207,10 @@ void Graphe::algoPrim()
 Graphe::~Graphe()
 {}
 
-void Graphe::placerSommets()
+void Graphe::dessinerGraphe()
 {
+    BITMAP* monbuffer = create_bitmap(1200,700);
     std::vector<Sommet*> vecteur_de_sommets;
-    for(const auto& it : m_sommets)
-    {
-        circlefill(screen, it->get_x(), it->get_y(),8,makecol(220,181,255));
-        textprintf_ex(screen,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId());
-    }
     for(const auto& itA : m_aretes)
     {
         int id_1;
@@ -242,10 +232,88 @@ void Graphe::placerSommets()
         int coord_y1 = vecteur_de_sommets[0]->get_y();
         int coord_x2 = vecteur_de_sommets[1]->get_x();
         int coord_y2 = vecteur_de_sommets[1]->get_y();
-        line(screen, coord_x1, coord_y1, coord_x2, coord_y2, makecol(255,0,0));
+        line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(0,255,255));
         vecteur_de_sommets.clear();
+    for(const auto& it : m_sommets)
+    {
+        circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(220,181,255));
+        textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId());
+    }
+    blit(monbuffer,screen,0,0,0,0,1200,700);
+//    if (key[KEY_SPACE])
+  //  {
+   //     clear_bitmap(monbuffer);
+   }
+    }
+void Graphe::dessinerPrim1()
+{
+    BITMAP* monbuffer = create_bitmap(1200,700);
+    std::vector<Sommet*> vecteur_de_sommets;
+    for(const auto& itA : m_aretesPrim1)
+    {
+        int id_1;
+        id_1=  itA->getId1();
+        int id_2;
+        id_2=  itA->getId2();
+
+
+        for(const auto& itt : m_sommets)
+        {
+            int sommetId = itt->getId();
+            if (sommetId ==id_1)
+                vecteur_de_sommets.push_back(itt);
+
+            if  (sommetId==id_2)
+                vecteur_de_sommets.push_back(itt);
+        }
+        int coord_x1 = vecteur_de_sommets[0]->get_x();
+        int coord_y1 = vecteur_de_sommets[0]->get_y();
+        int coord_x2 = vecteur_de_sommets[1]->get_x();
+        int coord_y2 = vecteur_de_sommets[1]->get_y();
+        line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(0,255,255));
+        vecteur_de_sommets.clear();
+    for(const auto& it : m_sommets)
+    {
+        circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(220,181,255));
+        textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId());
+    }
+    blit(monbuffer,screen,0,0,0,0,1200,700);
     }
 }
-//line(screen, int x1, int y1, int x2, int y2, int color);
-//}
+void Graphe::dessinerPrim2()
+{
+    BITMAP* monbuffer = create_bitmap(1200,700);
+    std::vector<Sommet*> vecteur_de_sommets;
+    for(const auto& itA : m_aretesPrim2)
+    {
+        int id_1;
+        id_1=  itA->getId1();
+        int id_2;
+        id_2=  itA->getId2();
+
+
+        for(const auto& itt : m_sommets)
+        {
+            int sommetId = itt->getId();
+            if (sommetId ==id_1)
+                vecteur_de_sommets.push_back(itt);
+
+            if  (sommetId==id_2)
+                vecteur_de_sommets.push_back(itt);
+        }
+        int coord_x1 = vecteur_de_sommets[0]->get_x();
+        int coord_y1 = vecteur_de_sommets[0]->get_y();
+        int coord_x2 = vecteur_de_sommets[1]->get_x();
+        int coord_y2 = vecteur_de_sommets[1]->get_y();
+        line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(254,120,251));
+        vecteur_de_sommets.clear();
+    for(const auto& it : m_sommets)
+    {
+        circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(255,255,183));
+        textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(236,202,232),-1,"%d",it->getId());
+    }
+    blit(monbuffer,screen,0,0,0,0,1200,700);
+    }
+}
+
 

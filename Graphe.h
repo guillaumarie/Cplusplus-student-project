@@ -22,7 +22,9 @@ class Graphe
         Graphe();
         void algoPrim();
         ~Graphe();
-        void placerSommets();
+        void dessinerGraphe();
+        void dessinerPrim1();
+        void dessinerPrim2();
 
 
 };
