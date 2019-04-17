@@ -34,7 +34,7 @@ void allegro()
 
 int main()
 {
-    Graphe graphe("triville.txt", "triville_weights_0.txt");
+    Graphe graphe("manhattan.txt", "manhattan_weights_0.txt");
     graphe.algoPrim();
 
 allegro();

@@ -215,11 +215,37 @@ Graphe::~Graphe()
 
 void Graphe::placerSommets()
 {
+    std::vector<Sommet*> vecteur_de_sommets;
     for(const auto& it : m_sommets)
     {
         circlefill(screen, it->get_x(), it->get_y(),8,makecol(220,181,255));
         textprintf_ex(screen,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId());
     }
+    for(const auto& itA : m_aretes)
+    {
+        int id_1;
+        id_1=  itA->getId1();
+        int id_2;
+        id_2=  itA->getId2();
 
+
+        for(const auto& itt : m_sommets)
+        {
+            int sommetId = itt->getId();
+            if (sommetId ==id_1)
+                vecteur_de_sommets.push_back(itt);
+
+            if  (sommetId==id_2)
+                vecteur_de_sommets.push_back(itt);
+        }
+        int coord_x1 = vecteur_de_sommets[0]->get_x();
+        int coord_y1 = vecteur_de_sommets[0]->get_y();
+        int coord_x2 = vecteur_de_sommets[1]->get_x();
+        int coord_y2 = vecteur_de_sommets[1]->get_y();
+        line(screen, coord_x1, coord_y1, coord_x2, coord_y2, makecol(255,0,0));
+        vecteur_de_sommets.clear();
     }
+}
+//line(screen, int x1, int y1, int x2, int y2, int color);
+//}
 
