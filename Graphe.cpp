@@ -180,7 +180,7 @@ void Graphe::algoPrim()
     while(decouverts == false);
 
     // à ce niveau, les aretes de l'arbre de poids minimum
-    int poids1Tot=0, poids2Tot=0;
+    float poids1Tot=0, poids2Tot=0;
     for(auto a:m_aretesPrim1)
     {
         poids1=a->getPoids1();
@@ -204,12 +204,12 @@ void Graphe::algoPrim()
 /// _________________________________________________________________
 
 
-Graphe::~Graphe()
+ Graphe::~Graphe()
 {}
 
 void Graphe::dessinerGraphe()
 {
-    BITMAP* monbuffer = create_bitmap(1200,700);
+    BITMAP* monbuffer = create_bitmap(SCREEN_W,SCREEN_H);
     std::vector<Sommet*> vecteur_de_sommets;
     for(const auto& itA : m_aretes)
     {
@@ -239,7 +239,7 @@ void Graphe::dessinerGraphe()
         circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(220,181,255));
         textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId());
     }
-    blit(monbuffer,screen,0,0,0,0,1200,700);
+    blit(monbuffer,screen,0,0,0,0,SCREEN_W,SCREEN_H);
 //    if (key[KEY_SPACE])
   //  {
    //     clear_bitmap(monbuffer);
@@ -247,6 +247,8 @@ void Graphe::dessinerGraphe()
     }
 void Graphe::dessinerPrim1()
 {
+    int poids2Tot = 0;
+    int poids1Tot =0;
     BITMAP* monbuffer = create_bitmap(1200,700);
     std::vector<Sommet*> vecteur_de_sommets;
     for(const auto& itA : m_aretesPrim1)
@@ -255,7 +257,8 @@ void Graphe::dessinerPrim1()
         id_1=  itA->getId1();
         int id_2;
         id_2=  itA->getId2();
-
+        poids1Tot = poids1Tot+itA->getPoids1();
+        poids2Tot = poids2Tot+itA->getPoids2();
 
         for(const auto& itt : m_sommets)
         {
@@ -277,12 +280,16 @@ void Graphe::dessinerPrim1()
         circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(220,181,255));
         textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId());
     }
-    blit(monbuffer,screen,0,0,0,0,1200,700);
+     if(itA==m_aretesPrim2.back())
+            textprintf_centre_ex(monbuffer,font,200,400,makecol(236,202,232) ,-1, "le poids total est ( %d ; %d )", poids1Tot, poids2Tot);
+        blit(monbuffer,screen,0,0,0,0,SCREEN_W,SCREEN_H);
     }
 }
 void Graphe::dessinerPrim2()
 {
-    BITMAP* monbuffer = create_bitmap(1200,700);
+    int poids2Tot = 0;
+    int poids1Tot =0;
+    BITMAP* monbuffer = create_bitmap(SCREEN_W,SCREEN_H);
     std::vector<Sommet*> vecteur_de_sommets;
     for(const auto& itA : m_aretesPrim2)
     {
@@ -290,7 +297,8 @@ void Graphe::dessinerPrim2()
         id_1=  itA->getId1();
         int id_2;
         id_2=  itA->getId2();
-
+        poids1Tot = poids1Tot+itA->getPoids1();
+        poids2Tot = poids2Tot+itA->getPoids2();
 
         for(const auto& itt : m_sommets)
         {
@@ -307,13 +315,17 @@ void Graphe::dessinerPrim2()
         int coord_y2 = vecteur_de_sommets[1]->get_y();
         line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(254,120,251));
         vecteur_de_sommets.clear();
-    for(const auto& it : m_sommets)
-    {
-        circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(255,255,183));
-        textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(236,202,232),-1,"%d",it->getId());
+
+        for(const auto& it : m_sommets)
+        {
+            circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(255,255,183));
+            textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(236,202,232),-1,"%d",it->getId());
+        }
+        if(itA==m_aretesPrim2.back())
+            textprintf_centre_ex(monbuffer,font,200,400,makecol(236,202,232) ,-1, "le poids total est ( %d ; %d )", poids1Tot, poids2Tot);
+        blit(monbuffer,screen,0,0,0,0,SCREEN_W,SCREEN_H);
     }
-    blit(monbuffer,screen,0,0,0,0,1200,700);
-    }
+
 }
 
 

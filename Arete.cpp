@@ -13,14 +13,14 @@ Arete::~Arete()
 
 void Arete::afficher(float poids)
 {
-    std::cout << "Arete entre les sommets " << m_id1 << " et " << m_id2 << " de poids " << poids << std::endl;
+    //std::cout << "Arete entre les sommets " << m_id1 << " et " << m_id2 << " de poids " << poids << std::endl;
 }
 
-int Arete::getPoids1()
+float Arete::getPoids1()
 {
     return m_poids1;
 }
-int Arete::getPoids2()
+float Arete::getPoids2()
 {
     return m_poids2;
 }
