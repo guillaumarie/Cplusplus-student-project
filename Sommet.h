@@ -19,7 +19,7 @@ class Sommet
     public : //méthodes
         Sommet(int id, double x, double y);
         void ajouterVoisin(Sommet*);
-        //int getId() const {return m_id;};
+        int getId() const {return m_id;};
         int getX(){return m_x;};
         int getY(){return m_y;};
         int getMarque1(){return m_marque1;};        // Marque pour le poids 1
