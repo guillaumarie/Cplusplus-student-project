@@ -1,6 +1,5 @@
 #include "Graphe.h"
 #include <math.h>
-#include <unordered_map>
 
 
 /// CONSTRUCTEUR + RECUPERATION DONNEES FICHIER ____________________________
@@ -191,6 +190,10 @@ void Graphe::algoPrim()
     while(decouverts == false);
 
     // à ce niveau, les aretes de l'arbre de poids minimum
+    m_poids1Tot1=0;
+    m_poids2Tot1=0;
+    m_poids1Tot2=0;
+    m_poids2Tot2=0;
     for(auto a:m_aretesPrim1)
     {
         poids1=a->getPoids1();
@@ -213,14 +216,16 @@ void Graphe::algoPrim()
 void Graphe::algoPareto()
 {
     int numeroPossibilite=0, reste=0, nombreAretes=0, compte=0, id1, id2, cc, nombre=pow(2,m_aretes.size());
+    float idGraphe=0, poids1, poids2, poids1Tot, poids2Tot, poids1TotMin, poids2TotMin;
     std::vector<int> nombreBinaire;
-    std::vector<Arete*> aretesSelectionnees;        // Vecteur d'arêtes sélectionnées pour une solution
+    std::vector<float> grapheSelectionnes;        // Vecteur d'arêtes sélectionnées pour une solution
     std::vector<int> idSelectionnes;
+    std::vector<std::vector<float>> espaceRecherche;
 
     for(int i=0; i<nombre; ++i )        // Parcours des possibilités
     {
         numeroPossibilite=i;                // Solution possible traitée en ce moment
-        compte=0;
+        compte=0, cc=0;
 
         /// Conversion de numeroPossibilte en binaire
         // On commence par créer une liste en binaire, chaque indice correspondant à une arête
@@ -262,12 +267,30 @@ void Graphe::algoPareto()
             }
             cc = m_sommets[id1]->verifierCC();        // Recherche des composantes connexes à partir du sommet id1 (n'importe quel sommet)
 
+            for(auto id:idSelectionnes)         // Réinitialisation des voisins pour chaque sommet dont on les a répertoriés dans la partie précédente
+            {
+                id1 = m_aretes[id]->getId1();
+                id2 = m_aretes[id]->getId2();
+                m_sommets[id1]->setVoisins();
+                m_sommets[id2]->setVoisins();
+            }
+
+            poids1Tot=0;                 // Réinitialisation des poids 1 et 2 totaux
+            poids2Tot=0;
             if(cc == m_ordre)      // Si tous les sommest sont dans la composante connexe au départ de n'importe quel sommet (ici : id1)
             {
+                grapheSelectionnes.push_back(idGraphe);        // Le numéro du graphe entre dans le vecteur graphe (le premier est 1)
                 for(auto id:idSelectionnes)       // On parcourt tous les idSelectionnés
                 {
-                    aretesSelectionnees.push_back(m_aretes[id]);       // On l'ajoute au vecteurs d'arêtes séléctionnées
+                    poids1 = m_aretes[id]->getPoids1();       // Poids 1 de l'arête
+                    poids2 = m_aretes[id]->getPoids2();       // Poids 2 de l'arête
+                    poids1Tot = poids1Tot + poids1;       // On additionne le poids 1 au poids 1 total
+                    poids2Tot = poids2Tot + poids2;       // On additionne le poids 2 au poids 2 total
                 }
+                grapheSelectionnes.push_back(poids1Tot);     // On entre le poidsTotal 1
+                grapheSelectionnes.push_back(poids2Tot);     // On entre le poidsTotal 2
+
+                espaceRecherche.push_back(grapheSelectionnes);      // On ajoute chaque graphe solution au vecteur espace de recherche
 
                 /*
                 std::cout<<"Solution "<<i<<std::endl;
@@ -280,14 +303,29 @@ void Graphe::algoPareto()
                 */
 
             }
-            idSelectionnes.clear();
-            aretesSelectionnees.clear();
+            idSelectionnes.clear();                 // On vide le vecteur idSelectionnes
+            grapheSelectionnes.clear();             // On vide le vecteur grapheSelectionnes
         }
-        nombreBinaire.clear();
+        nombreBinaire.clear();                  // On vide le nombre binaire de ses éléments
+        ++idGraphe;
     }
+
+    /*
+    std::vector<float> grapheTraite;
+    /// Tri des graphes de l'espace de recherche selon leurs poids
+    for(auto e:espaceRecherche)
+    {
+        grapheTraite=e;
+        if(grapheTraite[1])
+    }
+    */
 }
 
 /// _________________________________________________________________
+
+
+
+
 
 Graphe::~Graphe()
 {}

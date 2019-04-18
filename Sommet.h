@@ -1,6 +1,6 @@
 #ifndef SOMMET_H_INCLUDED
 #define SOMMET_H_INCLUDED
-#include <queue>
+#include <stack>
 #include <vector>
 #include <unordered_set>
 
