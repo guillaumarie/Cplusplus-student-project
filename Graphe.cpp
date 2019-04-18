@@ -212,17 +212,15 @@ void Graphe::algoPrim()
 
 void Graphe::algoPareto()
 {
-    int numeroPossibilite=0, reste=0, nombreAretes=0, taille=m_aretes.size(), id1, id2, nombre;
+    int numeroPossibilite=0, reste=0, nombreAretes=0, compte=0, id1, id2, cc, nombre=pow(2,m_aretes.size());
     std::vector<int> nombreBinaire;
     std::vector<Arete*> aretesSelectionnees;        // Vecteur d'arêtes sélectionnées pour une solution
     std::vector<int> idSelectionnes;
-    int cc;
-
-    nombre=pow(2,taille);
 
     for(int i=0; i<nombre; ++i )        // Parcours des possibilités
     {
         numeroPossibilite=i;                // Solution possible traitée en ce moment
+        compte=0;
 
         /// Conversion de numeroPossibilte en binaire
         // On commence par créer une liste en binaire, chaque indice correspondant à une arête
@@ -235,14 +233,14 @@ void Graphe::algoPareto()
         while(numeroPossibilite >= 2);                // Tant que le nombre est supérieur à 2
         nombreBinaire.push_back(numeroPossibilite);     // On ajoute le dernier quotient (0 ou 1) au vecteur nombreBinaire
 
-
         /// Calcul du nombre d'arêtes
         nombreAretes = 0;
-        for(int j=0; j<nombreBinaire.size(); ++j)        // Parcours des 0 et 1 du vecteur nombreBinaire (pour étudier les arêtes sélectionnées)
+        for(auto n:nombreBinaire)        // Parcours des 0 et 1 du vecteur nombreBinaire (pour étudier les arêtes sélectionnées)
         {
-            if(nombreBinaire[j] == 1)        // Si l'élément est égal à 1
+            if(n == 1)        // Si l'élément est égal à 1
                 ++nombreAretes;            // On incrémente le nombre de 1 dans le nombre binaire (donc le nombre d'arêtes sélectionnées)
         }
+
 
         /// Si nombreAretes = m_ordre-1, on récupère les identifiants des arêtes sélectionnées
         /// Puis on répertorie tous les voisins
@@ -250,34 +248,40 @@ void Graphe::algoPareto()
         /// Si oui, on ajoute toutes les arêtes de la possibilité étudiée à un vecteur d'arêtes
         if(nombreAretes == m_ordre-1)         // Si le nombre d'arêtes d'une solution potentielle est égal à l'ordre-1
         {
-            for(int j=0; j<nombreBinaire.size(); ++j)        // Parcours de tous les éléments (0 ou 1) du nombre binaire
+            for(auto n:nombreBinaire)        // Parcours de tous les éléments (0 ou 1) du nombre binaire
             {
-                if(nombreBinaire[nombreBinaire.size()-1-j] == 1)      // Si l'élément du nombre binaire est égal à 1
+                if(n == 1)      // Si l'élément du nombre binaire est égal à 1
                 {
-                    idSelectionnes.push_back( m_aretes[nombreBinaire.size()-1-j]->getIdArete() );
-                    id1 = m_aretes[nombreBinaire.size()-1-j]->getId1();
-                    id2 = m_aretes[nombreBinaire.size()-1-j]->getId2();
+                    idSelectionnes.push_back(compte);
+                    id1 = m_aretes[compte]->getId1();
+                    id2 = m_aretes[compte]->getId2();
                     m_sommets[id1]->ajouterVoisin(m_sommets[id2]);          // On ajoute le sommet id2 aux voisins de id1
-                    m_sommets[id2]->ajouterVoisin(m_sommets[id1]);          // On ajoute le sommet id1 aux voisins de id2
+                    m_sommets[id2]->ajouterVoisin(m_sommets[id1]);          // On ajoute le sommet id2 aux voisins de id1
                 }
+                ++compte;
             }
-            cc = m_sommets[0]->verifierCC();        // Recherche des composantes connexes à partir du sommet 0 (n'importe quel sommet)
-            if(cc == m_ordre)      // Si tous les sommest sont dans la composante connexe au départ de n'importe quel sommet (ici : 0)
+            cc = m_sommets[id1]->verifierCC();        // Recherche des composantes connexes à partir du sommet id1 (n'importe quel sommet)
+
+            if(cc == m_ordre)      // Si tous les sommest sont dans la composante connexe au départ de n'importe quel sommet (ici : id1)
             {
-                for(size_t j=0; j<m_ordre-1; ++j)       // On parcourt tous les idSelectionnés
+                for(auto id:idSelectionnes)       // On parcourt tous les idSelectionnés
                 {
-                    aretesSelectionnees.push_back(m_aretes[j]);       // On l'ajoute au vecteurs d'arêtes séléctionnées
+                    aretesSelectionnees.push_back(m_aretes[id]);       // On l'ajoute au vecteurs d'arêtes séléctionnées
                 }
+
+                /*
                 std::cout<<"Solution "<<i<<std::endl;
                 for(int j=0; j<m_ordre-1; ++j)
                 {
                     int id=idSelectionnes[j];
-                    std::cout<<id<<std::endl;
+                    std::cout<<id<<" ";
                 }
                 std::cout<<std::endl;
-                idSelectionnes.clear();
-                aretesSelectionnees.clear();
+                */
+
             }
+            idSelectionnes.clear();
+            aretesSelectionnees.clear();
         }
         nombreBinaire.clear();
     }

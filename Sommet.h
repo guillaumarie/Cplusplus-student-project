@@ -20,8 +20,8 @@ class Sommet
         Sommet(int id, double x, double y);
         void ajouterVoisin(Sommet*);
         int getId() const {return m_id;};
-        int getX(){return m_x;};
-        int getY(){return m_y;};
+        int getX()const {return m_x;};
+        int getY()const {return m_y;};
         int getMarque1(){return m_marque1;};        // Marque pour le poids 1
         int getMarque2(){return m_marque2;};        // Marque pour le poids 2
         void marquer1(){m_marque1=true;};
