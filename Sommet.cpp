@@ -12,7 +12,7 @@ Sommet::~Sommet()
 
 ///----------------------------------------------------------------------------
 
-void Sommet::ajouterVoisin(Sommet* voisin){
+void Sommet::ajouterVoisin(const Sommet* voisin){
     m_voisins.push_back(voisin);
 }
 
@@ -20,11 +20,11 @@ void Sommet::ajouterVoisin(Sommet* voisin){
 
 /// Méthode rechercherCC inspiré du TP2 (réalisé avec Martin Puyou-Lascassies)
 
-int Sommet::verifierCC()
+int Sommet::verifierCC() const
 {
-    std::unordered_set<Sommet*> decouvert;
-    std::stack<Sommet*> pile;
-    std::vector<Sommet*> voisins;
+    std::unordered_set<const Sommet*> decouvert;
+    std::stack<const Sommet*> pile;
+    std::vector<const Sommet*> voisins;
     int cc = 1;
 
     // parcours DFS
@@ -32,8 +32,8 @@ int Sommet::verifierCC()
     decouvert.insert(this); //on le marque comme exploré
     while( pile.empty() != 1 ) //tant que la pile n'est pas vide
     {
-        Sommet* s;
-        s->setVoisins();
+        const Sommet* s;
+        //s->setVoisins();
         s = pile.top();           // lecture de l'élément du haut de la pile
         pile.pop();                 // on enleve le sommet s de la pile apres l'avoir marqué = l'avoir ajouté dans le unordered_map
         voisins = s->getVoisins();

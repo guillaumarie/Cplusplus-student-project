@@ -221,6 +221,7 @@ void Graphe::algoPareto()
     std::vector<float> grapheSelectionnes;        // Vecteur d'arêtes sélectionnées pour une solution
     std::vector<int> idSelectionnes;
     std::vector<std::vector<float>> espaceRecherche;
+    int cmpt=0;
 
     for(int i=0; i<nombre; ++i )        // Parcours des possibilités
     {
@@ -289,8 +290,9 @@ void Graphe::algoPareto()
                 }
                 grapheSelectionnes.push_back(poids1Tot);     // On entre le poidsTotal 1
                 grapheSelectionnes.push_back(poids2Tot);     // On entre le poidsTotal 2
+                ++cmpt;
 
-                espaceRecherche.push_back(grapheSelectionnes);      // On ajoute chaque graphe solution au vecteur espace de recherche
+                espaceRecherche.push_back(grapheSelectionnes);      // On ajoute chaque graphe (vecteur) solution au vecteur espace de recherche
 
                 /*
                 std::cout<<"Solution "<<i<<std::endl;
@@ -309,6 +311,7 @@ void Graphe::algoPareto()
         nombreBinaire.clear();                  // On vide le nombre binaire de ses éléments
         ++idGraphe;
     }
+    std::cout<<cmpt<<std::endl;
 
     /*
     std::vector<float> grapheTraite;

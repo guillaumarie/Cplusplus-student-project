@@ -13,12 +13,12 @@ class Sommet
         int m_id;
         double m_x;
         double m_y;
-        std::vector<Sommet*> m_voisins; // tableau contenant les sommets voisins
+        std::vector<const Sommet*> m_voisins; // tableau contenant les sommets voisins
 
 
     public : //méthodes
         Sommet(int id, double x, double y);
-        void ajouterVoisin(Sommet*);
+        void ajouterVoisin(const Sommet*);
         int getId() const {return m_id;};
         int getX()const {return m_x;};
         int getY()const {return m_y;};
@@ -26,8 +26,8 @@ class Sommet
         int getMarque2(){return m_marque2;};        // Marque pour le poids 2
         void marquer1(){m_marque1=true;};
         void marquer2(){m_marque2=true;};
-        int verifierCC();
-        std::vector<Sommet*> getVoisins() {return m_voisins;};
+        int verifierCC() const;
+        std::vector<const Sommet*> getVoisins() const {return m_voisins;};
         void setVoisins() {m_voisins.clear();};
         ~Sommet();
 
