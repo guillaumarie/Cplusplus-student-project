@@ -12,7 +12,7 @@ int main()
     auto t_start = std::chrono::high_resolution_clock::now();       // Début horloge temps réel
 
 
-    Graphe graphe("manhattan.txt", "manhattan_weights_0.txt");
+    Graphe graphe("broadway.txt", "broadway_weights_0.txt");
     graphe.algoPrim();
     graphe.algoPareto();
 

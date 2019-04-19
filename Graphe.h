@@ -6,6 +6,9 @@
 #include "Arete.h"
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <utility>
+#include <bits/stdc++.h>
 
 class Graphe
 {
@@ -22,11 +25,12 @@ class Graphe
 
 
     public :
-        //faire prim
         Graphe(std::string nomFichierCoord, std::string nomFichierPoids);
         Graphe();
         void algoPrim();
         void algoPareto();
+        //bool comp(std::pair<float,float> &a, std::pair<float,float> &b);
+        //bool comp(const std::pair<float,float> &a, const std::pair<float,float> &b);
         ~Graphe();
 
 };

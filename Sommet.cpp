@@ -33,7 +33,6 @@ int Sommet::verifierCC() const
     while( pile.empty() != 1 ) //tant que la pile n'est pas vide
     {
         const Sommet* s;
-        //s->setVoisins();
         s = pile.top();           // lecture de l'élément du haut de la pile
         pile.pop();                 // on enleve le sommet s de la pile apres l'avoir marqué = l'avoir ajouté dans le unordered_map
         voisins = s->getVoisins();

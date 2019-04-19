@@ -213,15 +213,25 @@ void Graphe::algoPrim()
 
 /// _________________________________________________________________
 
+bool comp(const std::pair<float,float> &a, const std::pair<float,float> &b)     // Comparateur utilisé pour trié les poids à la fin de l'algorithme
+{
+    return a.second < b.second;
+}
+
 void Graphe::algoPareto()
 {
     int numeroPossibilite=0, reste=0, nombreAretes=0, compte=0, id1, id2, cc, nombre=pow(2,m_aretes.size());
-    float idGraphe=0, poids1, poids2, poids1Tot, poids2Tot, poids1TotMin, poids2TotMin;
+    float idGraphe=0, poids1, poids2, poids1Tot, poids2Tot, xMin, yMin;
     std::vector<int> nombreBinaire;
-    std::vector<float> grapheSelectionnes;        // Vecteur d'arêtes sélectionnées pour une solution
     std::vector<int> idSelectionnes;
-    std::vector<std::vector<float>> espaceRecherche;
-    int cmpt=0;
+    std::vector<std::pair<float,float>> triPoids1;
+    std::vector<std::pair<float,float>> triPoids2;
+    std::vector<float> pointPareto;
+    std::vector<float> pointNuage;
+    std::vector<std::vector<float>> frontierePareto;
+    std::vector<std::vector<float>> nuagePoints;
+    //int cmpt=0;
+
 
     for(int i=0; i<nombre; ++i )        // Parcours des possibilités
     {
@@ -280,7 +290,6 @@ void Graphe::algoPareto()
             poids2Tot=0;
             if(cc == m_ordre)      // Si tous les sommest sont dans la composante connexe au départ de n'importe quel sommet (ici : id1)
             {
-                grapheSelectionnes.push_back(idGraphe);        // Le numéro du graphe entre dans le vecteur graphe (le premier est 1)
                 for(auto id:idSelectionnes)       // On parcourt tous les idSelectionnés
                 {
                     poids1 = m_aretes[id]->getPoids1();       // Poids 1 de l'arête
@@ -288,47 +297,185 @@ void Graphe::algoPareto()
                     poids1Tot = poids1Tot + poids1;       // On additionne le poids 1 au poids 1 total
                     poids2Tot = poids2Tot + poids2;       // On additionne le poids 2 au poids 2 total
                 }
-                grapheSelectionnes.push_back(poids1Tot);     // On entre le poidsTotal 1
-                grapheSelectionnes.push_back(poids2Tot);     // On entre le poidsTotal 2
-                ++cmpt;
+                //++cmpt;
 
-                espaceRecherche.push_back(grapheSelectionnes);      // On ajoute chaque graphe (vecteur) solution au vecteur espace de recherche
-
-                /*
-                std::cout<<"Solution "<<i<<std::endl;
-                for(int j=0; j<m_ordre-1; ++j)
-                {
-                    int id=idSelectionnes[j];
-                    std::cout<<id<<" ";
-                }
-                std::cout<<std::endl;
-                */
-
+                std::pair <float,float> pair1 = std::make_pair (idGraphe, poids1Tot);
+                std::pair <float,float> pair2 = std::make_pair (idGraphe, poids2Tot);
+                triPoids1.push_back(pair1);
+                triPoids2.push_back(pair2);
             }
             idSelectionnes.clear();                 // On vide le vecteur idSelectionnes
-            grapheSelectionnes.clear();             // On vide le vecteur grapheSelectionnes
         }
         nombreBinaire.clear();                  // On vide le nombre binaire de ses éléments
         ++idGraphe;
     }
-    std::cout<<cmpt<<std::endl;
+    //std::cout<<cmpt<<std::endl;
 
-    /*
-    std::vector<float> grapheTraite;
-    /// Tri des graphes de l'espace de recherche selon leurs poids
-    for(auto e:espaceRecherche)
+    std::sort(triPoids1.begin(), triPoids1.end(), comp);
+
+    for(int i=0; i<triPoids2.size(); ++i)
     {
-        grapheTraite=e;
-        if(grapheTraite[1])
+        if(triPoids2[i].first == triPoids1[0].first)
+        {
+            yMin = triPoids2[i].second;
+        }
     }
-    */
+
+    bool oui=false;
+    for(int i=0; i<triPoids1.size(); ++i)           // Recherche de graphes de même poids 1 total que le premier graphe
+    {
+        if(triPoids1[i].second == triPoids1[0].second)
+            oui=true;
+    }
+
+    if(!oui)             // Si aucun graphe trouvé
+    {
+        for(int i=0; i<triPoids1.size(); ++i)
+        {
+            if(triPoids1[i].second != xMin)
+            {
+                for(int j=0; j<triPoids2.size(); ++j)
+                {
+                    if(triPoids2[j].first == triPoids1[i].first)
+                    {
+                        if(triPoids2[j].second <= yMin)
+                        {
+                            yMin = triPoids2[j].second;
+                            xMin = triPoids1[i].second;
+                            pointPareto.push_back(triPoids1[i].first);
+                            pointPareto.push_back(triPoids1[i].second);
+                            pointPareto.push_back(yMin);
+                            frontierePareto.push_back(pointPareto);
+                            pointPareto.clear();
+                        }
+                        else
+                        {
+                            pointNuage.push_back(triPoids1[i].first);
+                            pointNuage.push_back(triPoids1[i].second);
+                            pointNuage.push_back(triPoids2[j].second);
+                            nuagePoints.push_back(pointNuage);
+                            pointNuage.clear();
+                        }
+                    }
+                }
+            }
+            else if(triPoids1[i].second == xMin)
+            {
+                for(int j=0; j<triPoids2.size(); ++j)
+                {
+                    if(triPoids2[j].first == triPoids1[i].first)
+                    {
+                        if(triPoids2[j].second <= yMin)
+                        {
+                            nuagePoints.push_back(frontierePareto.back());
+                            frontierePareto.pop_back();
+                            yMin = triPoids2[j].second;
+                            xMin = triPoids1[i].second;
+                            pointPareto.push_back(triPoids1[i].first);
+                            pointPareto.push_back(triPoids1[i].second);
+                            pointPareto.push_back(yMin);
+                            frontierePareto.push_back(pointPareto);
+                            pointPareto.clear();
+                        }
+                        else
+                        {
+                            pointNuage.push_back(triPoids1[i].first);
+                            pointNuage.push_back(triPoids1[i].second);
+                            pointNuage.push_back(triPoids2[j].second);
+                            nuagePoints.push_back(pointNuage);
+                            pointNuage.clear();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if(oui)
+    {
+        xMin=triPoids1[0].second;
+        pointPareto.push_back(triPoids1[0].first);
+        pointPareto.push_back(triPoids1[0].second);
+        pointPareto.push_back(yMin);
+        frontierePareto.push_back(pointPareto);
+        pointPareto.clear();
+
+        for(int i=1; i<triPoids1.size(); ++i)
+        {
+            if(triPoids1[i].second != xMin)
+            {
+                for(int j=0; j<triPoids2.size(); ++j)
+                {
+                    if(triPoids2[j].first == triPoids1[i].first)
+                    {
+                        if(triPoids2[j].second < yMin)
+                        {
+                            yMin = triPoids2[j].second;
+                            xMin = triPoids1[i].second;
+                            pointPareto.push_back(triPoids1[i].first);
+                            pointPareto.push_back(triPoids1[i].second);
+                            pointPareto.push_back(yMin);
+                            frontierePareto.push_back(pointPareto);
+                            pointPareto.clear();
+                        }
+                        else
+                        {
+                            pointNuage.push_back(triPoids1[i].first);
+                            pointNuage.push_back(triPoids1[i].second);
+                            pointNuage.push_back(triPoids2[j].second);
+                            nuagePoints.push_back(pointNuage);
+                            pointNuage.clear();
+                        }
+                    }
+                }
+            }
+            else if(triPoids1[i].second == xMin)
+            {
+                for(int j=0; j<triPoids2.size(); ++j)
+                {
+                    if(triPoids2[j].first == triPoids1[i].first)
+                    {
+                        if(triPoids2[j].second <= yMin)
+                        {
+                            nuagePoints.push_back(frontierePareto.back());
+                            frontierePareto.pop_back();
+                            yMin = triPoids2[j].second;
+                            xMin = triPoids1[i].second;
+                            pointPareto.push_back(triPoids1[i].first);
+                            pointPareto.push_back(triPoids1[i].second);
+                            pointPareto.push_back(yMin);
+                            frontierePareto.push_back(pointPareto);
+                            pointPareto.clear();
+                        }
+                        else
+                        {
+                            pointNuage.push_back(triPoids1[i].first);
+                            pointNuage.push_back(triPoids1[i].second);
+                            pointNuage.push_back(triPoids2[j].second);
+                            nuagePoints.push_back(pointNuage);
+                            pointNuage.clear();
+                        }
+                    }
+                }
+            }
+        }
+    }
+/*
+    std::cout<<std::endl<<"Frontiere Pareto"<<std::endl;
+    for(int i=0; i<frontierePareto.size(); ++i)
+    {
+        std::cout<<"idGraphe : "<<frontierePareto[i][0]<<"  poidsTot1 : "<<frontierePareto[i][1]<<"  poidstot2 : "<<frontierePareto[i][2]<<std::endl;
+    }
+
+    std::cout<<std::endl<<"Nuage"<<std::endl;
+    for(int i=0; i<nuagePoints.size(); ++i)
+    {
+        std::cout<<"idGraphe : "<<nuagePoints[i][0]<<"  poidsTot1 : "<<nuagePoints[i][1]<<"  poidstot2 : "<<nuagePoints[i][2]<<std::endl;
+    }
+*/
 }
 
 /// _________________________________________________________________
-
-
-
-
 
 Graphe::~Graphe()
 {}
