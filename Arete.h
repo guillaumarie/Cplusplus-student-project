@@ -17,7 +17,6 @@ class Arete
         int getId2();
         float getPoids1();
         float getPoids2();
-        void afficher(float poids);
         ~Arete();
 
 };

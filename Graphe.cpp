@@ -1,4 +1,5 @@
 #include "Graphe.h"
+#include "menu.h"
 
 /// CONSTRUCTEUR + RECUPERATION DONNEES FICHIER ____________________________
 
@@ -180,26 +181,36 @@ void Graphe::algoPrim()
     while(decouverts == false);
 
     // à ce niveau, les aretes de l'arbre de poids minimum
-    float poids1Tot=0, poids2Tot=0;
+    m_poids1Tot1=0;
+    m_poids2Tot1=0;
+    m_poids1Tot2=0;
+    m_poids2Tot2=0;
     for(auto a:m_aretesPrim1)
     {
         poids1=a->getPoids1();
         poids2=a->getPoids2();
-        a->afficher(poids1);
-        poids1Tot=poids1Tot+poids1;
-        poids2Tot=poids2Tot+poids2;
+        m_poids1Tot1=m_poids1Tot1+poids1;
+        m_poids2Tot1=m_poids2Tot1+poids2;
     }
-    poids1Tot=0;
-    poids2Tot=0;
+
     for(auto b:m_aretesPrim2)
     {
         poids1=b->getPoids1();
         poids2=b->getPoids2();
-        b->afficher(poids2);
-        poids1Tot=poids1Tot+poids1;
-        poids2Tot=poids2Tot+poids2;
+        m_poids1Tot2=m_poids1Tot2+poids1;
+        m_poids2Tot2=m_poids2Tot2+poids2;
     }
 }
+
+std::vector<Arete*> Graphe::getm_Arete()
+{
+    return m_aretes;
+}
+
+
+
+
+
 
 /// _________________________________________________________________
 
@@ -207,19 +218,18 @@ void Graphe::algoPrim()
  Graphe::~Graphe()
 {}
 
-void Graphe::dessinerGraphe()
+void Graphe::dessinerGraphe() //Dessiner les graphes
 {
-    BITMAP* monbuffer = create_bitmap(SCREEN_W,SCREEN_H);
+    BITMAP* monbuffer = create_bitmap(1400,750);
     std::vector<Sommet*> vecteur_de_sommets;
-    for(const auto& itA : m_aretes)
+    for(const auto& itA : m_aretes)     // parcours de m_aretes
     {
         int id_1;
         id_1=  itA->getId1();
         int id_2;
         id_2=  itA->getId2();
 
-
-        for(const auto& itt : m_sommets)
+        for(const auto& itt : m_sommets) // parcours de m_sommets
         {
             int sommetId = itt->getId();
             if (sommetId ==id_1)
@@ -228,37 +238,38 @@ void Graphe::dessinerGraphe()
             if  (sommetId==id_2)
                 vecteur_de_sommets.push_back(itt);
         }
-        int coord_x1 = vecteur_de_sommets[0]->get_x();
+        int coord_x1 = vecteur_de_sommets[0]->get_x(); // pour dessiner les aretes on recuperes les coordonees des 2 sommets
         int coord_y1 = vecteur_de_sommets[0]->get_y();
         int coord_x2 = vecteur_de_sommets[1]->get_x();
         int coord_y2 = vecteur_de_sommets[1]->get_y();
         line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(0,255,255));
         vecteur_de_sommets.clear();
-    for(const auto& it : m_sommets)
+    for(const auto& it : m_sommets) // parcours de m_sommets
     {
-        circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(220,181,255));
-        textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId());
+        circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(220,181,255)); // on dessine tous les sommets
+        textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId()); // on indique les indices d'aretes
+
     }
-    blit(monbuffer,screen,0,0,0,0,SCREEN_W,SCREEN_H);
-//    if (key[KEY_SPACE])
-  //  {
-   //     clear_bitmap(monbuffer);
+    blit(monbuffer,screen,0,0,0,0,1400,750);
+
    }
     }
-void Graphe::dessinerPrim1()
+void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
 {
-    int poids2Tot = 0;
-    int poids1Tot =0;
-    BITMAP* monbuffer = create_bitmap(1200,700);
+    //float poids2Tot = 0;
+    //float poids1Tot =0;
+    BITMAP* monbuffer = create_bitmap(1400,750);
     std::vector<Sommet*> vecteur_de_sommets;
+
     for(const auto& itA : m_aretesPrim1)
     {
+        std::cout <<"test";
         int id_1;
         id_1=  itA->getId1();
         int id_2;
         id_2=  itA->getId2();
-        poids1Tot = poids1Tot+itA->getPoids1();
-        poids2Tot = poids2Tot+itA->getPoids2();
+        //poids1Tot = poids1Tot+itA->getPoids1();
+        //poids2Tot = poids2Tot+itA->getPoids2();
 
         for(const auto& itt : m_sommets)
         {
@@ -281,15 +292,15 @@ void Graphe::dessinerPrim1()
         textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId());
     }
      if(itA==m_aretesPrim2.back())
-            textprintf_centre_ex(monbuffer,font,200,400,makecol(236,202,232) ,-1, "le poids total est ( %d ; %d )", poids1Tot, poids2Tot);
-        blit(monbuffer,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232) ,-1, "le poids total est ( %2.2f ; %2.2f  )", m_poids1Tot1, m_poids2Tot1);
+        blit(monbuffer,screen,0,0,0,0,1400,750);
     }
 }
-void Graphe::dessinerPrim2()
+void Graphe::dessinerPrim2() // pour dessinerl'arbre couvrant de poids 1 minimum
 {
-    int poids2Tot = 0;
-    int poids1Tot =0;
-    BITMAP* monbuffer = create_bitmap(SCREEN_W,SCREEN_H);
+    //float poids2Tot = 0;
+    //float poids1Tot =0;
+    BITMAP* monbuffer = create_bitmap(1400,750);
     std::vector<Sommet*> vecteur_de_sommets;
     for(const auto& itA : m_aretesPrim2)
     {
@@ -297,8 +308,8 @@ void Graphe::dessinerPrim2()
         id_1=  itA->getId1();
         int id_2;
         id_2=  itA->getId2();
-        poids1Tot = poids1Tot+itA->getPoids1();
-        poids2Tot = poids2Tot+itA->getPoids2();
+        //poids1Tot = poids1Tot+itA->getPoids1();
+        //poids2Tot = poids2Tot+itA->getPoids2();
 
         for(const auto& itt : m_sommets)
         {
@@ -322,10 +333,25 @@ void Graphe::dessinerPrim2()
             textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(236,202,232),-1,"%d",it->getId());
         }
         if(itA==m_aretesPrim2.back())
-            textprintf_centre_ex(monbuffer,font,200,400,makecol(236,202,232) ,-1, "le poids total est ( %d ; %d )", poids1Tot, poids2Tot);
-        blit(monbuffer,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232) ,-1, "le poids total est ( %2.2f ; %2.2f )", m_poids1Tot2, m_poids2Tot2);
+        blit(monbuffer,screen,0,0,0,0,1400,750);
     }
 
 }
-
+///std::vector<std::vector<float>> frontiere,std::vector<std::vector<float>> combiPareto
+void Graphe::dessinerPareto()
+{
+    BITMAP* monbuffer1 = create_bitmap(1400,750);
+    rectfill(monbuffer1, 0, 0, 1400,750, makecol(255,255,255));
+ circlefill(monbuffer1,20,730,1,makecol(140,0,255));
+ rectfill(monbuffer1, 20, 730, 1340,734, makecol(140,0,255)); // Utilisation de rectfill pour pouvoir faire des axes épais
+ rectfill(monbuffer1, 20, 730,24,30, makecol(140,0,255));
+  textprintf_ex(monbuffer1,font,1340+6,730+6,makecol(0,85,255),-1,"cout 1");
+  textprintf_ex(monbuffer1,font,20-6,30-12,makecol(0,85,255),-1,"cout 2");
+  blit(monbuffer1,screen,0,0,0,0,1400,750);
+  ///for(auto coor : frontiere)
+   // {
+    //circlefill(monbuffer1,20+coor[0],695-coor[1],makecol(0,255,0));
+ // }
+}
 
