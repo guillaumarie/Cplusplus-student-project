@@ -1,22 +1,23 @@
 #include "Graphe.h"
 #include "menu.h"
+#include <math.h>
 
 /// CONSTRUCTEUR + RECUPERATION DONNEES FICHIER ____________________________
 
 Graphe::Graphe(std::string nomFichierCoord, std::string nomFichierPoids)
 {
     std::ifstream coord{nomFichierCoord};
-    int ordre, taille1, taille2;
+    int taille1, taille2;
     if (!coord)
         throw std::runtime_error( "Impossible d'ouvrir en lecture " + nomFichierCoord );
-    coord >> ordre;
+    coord >> m_ordre;
     if ( coord.fail() )
         throw std::runtime_error("Probleme lecture ordre du graphe");
 
     int id;
     double x,y;
     //lecture des sommets
-    for (int i=0; i<ordre; ++i)
+    for (int i=0; i<m_ordre; ++i)
     {
         coord>>id;
         if(coord.fail())
@@ -91,6 +92,7 @@ Graphe::Graphe(std::string nomFichierCoord, std::string nomFichierPoids)
 void Graphe::algoPrim()
 {
     bool decouverts = true;
+    int id1,id2;
     float poids1, poids2;
 
     m_sommets[0]->marquer1();
@@ -103,13 +105,16 @@ void Graphe::algoPrim()
         poids1 = 10000.0;
         poids2 = 10000.0;
 
-        for(auto j:m_aretes)        // Parcours graphe pour poids 1
-        {
-            int s1 = j->getId1(); //indice du sommet
-            int s2 = j->getId2();
 
-            if (   ( m_sommets[s1]->getMarque1() && !m_sommets[s2]->getMarque1())
-                    || ( m_sommets[s2]->getMarque1() && !m_sommets[s1]->getMarque1())  )
+        /// Parcours pour poids 2
+
+        for(auto j:m_aretes)
+        {
+            id1 = j->getId1(); //indice du sommet
+            id2 = j->getId2();
+
+            if (   ( m_sommets[id1]->getMarque1() && !m_sommets[id2]->getMarque1())
+                    || ( m_sommets[id2]->getMarque1() && !m_sommets[id1]->getMarque1())  )
             {
                 if (j->getPoids1() < poids1)
                 {
@@ -120,29 +125,31 @@ void Graphe::algoPrim()
         }
 
         // à ce niveau, meilleureArete est l'arete de poids min
-        int s1 = meilleureArete->getId1();
-        int s2 = meilleureArete->getId2();
+        id1 = meilleureArete->getId1();
+        id2 = meilleureArete->getId2();
 
-        if (  m_sommets[s1]->getMarque1() && !m_sommets[s2]->getMarque1() )
+        if (  m_sommets[id1]->getMarque1() && !m_sommets[id2]->getMarque1() )
         {
-            m_sommets[s2]->marquer1();
+            m_sommets[id2]->marquer1();
         }
-        if (  m_sommets[s2]->getMarque1() && !m_sommets[s1]->getMarque1() )
+        if (  m_sommets[id2]->getMarque1() && !m_sommets[id1]->getMarque1() )
         {
-            m_sommets[s1]->marquer1();
+            m_sommets[id1]->marquer1();
         }
 
         m_aretesPrim1.push_back(meilleureArete);
 
 
 
-        for(auto j:m_aretes)        // Parcours pour poids 2
-        {
-            int s1 = j->getId1(); //indice du sommet
-            int s2 = j->getId2();
+        /// Parcours pour poids 2
 
-            if (   ( m_sommets[s1]->getMarque2() && !m_sommets[s2]->getMarque2())
-                    || ( m_sommets[s2]->getMarque2() && !m_sommets[s1]->getMarque2())  )
+        for(auto j:m_aretes)
+        {
+            id1 = j->getId1(); //indice du sommet
+            id2 = j->getId2();
+
+            if (   ( m_sommets[id1]->getMarque2() && !m_sommets[id2]->getMarque2())
+                    || ( m_sommets[id2]->getMarque2() && !m_sommets[id1]->getMarque2())  )
             {
                 if (j->getPoids2() < poids2)
                 {
@@ -153,16 +160,16 @@ void Graphe::algoPrim()
         }
 
         // à ce niveau, meilleureArete est l'arete de poids min
-        s1 = meilleureArete->getId1();
-        s2 = meilleureArete->getId2();
+        id1 = meilleureArete->getId1();
+        id2 = meilleureArete->getId2();
 
-        if (  m_sommets[s1]->getMarque2() && !m_sommets[s2]->getMarque2() )
+        if (  m_sommets[id1]->getMarque2() && !m_sommets[id2]->getMarque2() )
         {
-            m_sommets[s2]->marquer2();
+            m_sommets[id2]->marquer2();
         }
-        if (  m_sommets[s2]->getMarque2() && !m_sommets[s1]->getMarque2() )
+        if (  m_sommets[id2]->getMarque2() && !m_sommets[id1]->getMarque2() )
         {
-            m_sommets[s1]->marquer2();
+            m_sommets[id1]->marquer2();
         }
 
         m_aretesPrim2.push_back(meilleureArete);
@@ -214,9 +221,274 @@ std::vector<Arete*> Graphe::getm_Arete()
 
 /// _________________________________________________________________
 
+bool comp(const std::pair<float,float> &a, const std::pair<float,float> &b)     // Comparateur utilisé pour trié les poids à la fin de l'algorithme
+{
+    return a.second < b.second;
+}
+
+void Graphe::algoPareto()
+{
+    int numeroPossibilite=0, reste=0, nombreAretes=0, compte=0, id1, id2, cc, nombre=pow(2,m_aretes.size());
+    float idGraphe=0, poids1, poids2, poids1Tot, poids2Tot, xMin, yMin;
+    std::vector<int> nombreBinaire;
+    std::vector<int> idSelectionnes;
+    std::vector<std::pair<float,float>> triPoids1;
+    std::vector<std::pair<float,float>> triPoids2;
+    std::vector<float> pointPareto;
+    std::vector<float> pointNuage;
+    std::vector<std::vector<float>> frontierePareto;
+    std::vector<std::vector<float>> nuagePoints;
+    //int cmpt=0;
+
+
+    for(int i=0; i<nombre; ++i )        // Parcours des possibilités
+    {
+        numeroPossibilite=i;                // Solution possible traitée en ce moment
+        compte=0, cc=0;
+
+        /// Conversion de numeroPossibilte en binaire
+        // On commence par créer une liste en binaire, chaque indice correspondant à une arête
+        do
+        {
+            reste=numeroPossibilite%2;             // On calcule son reste dans la division euclidienne par 2
+            nombreBinaire.push_back(reste);         // On ajoute le reste (0 ou 1) au vecteur nombreBinaire
+            numeroPossibilite = numeroPossibilite/2;           // Et on garde le quotient de la division
+        }
+        while(numeroPossibilite >= 2);                // Tant que le nombre est supérieur à 2
+        nombreBinaire.push_back(numeroPossibilite);     // On ajoute le dernier quotient (0 ou 1) au vecteur nombreBinaire
+
+        /// Calcul du nombre d'arêtes
+        nombreAretes = 0;
+        for(auto n:nombreBinaire)        // Parcours des 0 et 1 du vecteur nombreBinaire (pour étudier les arêtes sélectionnées)
+        {
+            if(n == 1)        // Si l'élément est égal à 1
+                ++nombreAretes;            // On incrémente le nombre de 1 dans le nombre binaire (donc le nombre d'arêtes sélectionnées)
+        }
+
+
+        /// Si nombreAretes = m_ordre-1, on récupère les identifiants des arêtes sélectionnées
+        /// Puis on répertorie tous les voisins
+        /// Puis on s'assure que tous les sommets sont bien dans la même composante connexe
+        /// Si oui, on ajoute toutes les arêtes de la possibilité étudiée à un vecteur d'arêtes
+        if(nombreAretes == m_ordre-1)         // Si le nombre d'arêtes d'une solution potentielle est égal à l'ordre-1
+        {
+            for(auto n:nombreBinaire)        // Parcours de tous les éléments (0 ou 1) du nombre binaire
+            {
+                if(n == 1)      // Si l'élément du nombre binaire est égal à 1
+                {
+                    idSelectionnes.push_back(compte);
+                    id1 = m_aretes[compte]->getId1();
+                    id2 = m_aretes[compte]->getId2();
+                    m_sommets[id1]->ajouterVoisin(m_sommets[id2]);          // On ajoute le sommet id2 aux voisins de id1
+                    m_sommets[id2]->ajouterVoisin(m_sommets[id1]);          // On ajoute le sommet id2 aux voisins de id1
+                }
+                ++compte;
+            }
+            cc = m_sommets[id1]->verifierCC();        // Recherche des composantes connexes à partir du sommet id1 (n'importe quel sommet)
+
+            for(auto id:idSelectionnes)         // Réinitialisation des voisins pour chaque sommet dont on les a répertoriés dans la partie précédente
+            {
+                id1 = m_aretes[id]->getId1();
+                id2 = m_aretes[id]->getId2();
+                m_sommets[id1]->setVoisins();
+                m_sommets[id2]->setVoisins();
+            }
+
+            poids1Tot=0;                 // Réinitialisation des poids 1 et 2 totaux
+            poids2Tot=0;
+            if(cc == m_ordre)      // Si tous les sommest sont dans la composante connexe au départ de n'importe quel sommet (ici : id1)
+            {
+                for(auto id:idSelectionnes)       // On parcourt tous les idSelectionnés
+                {
+                    poids1 = m_aretes[id]->getPoids1();       // Poids 1 de l'arête
+                    poids2 = m_aretes[id]->getPoids2();       // Poids 2 de l'arête
+                    poids1Tot = poids1Tot + poids1;       // On additionne le poids 1 au poids 1 total
+                    poids2Tot = poids2Tot + poids2;       // On additionne le poids 2 au poids 2 total
+                }
+                //++cmpt;
+
+                std::pair <float,float> pair1 = std::make_pair (idGraphe, poids1Tot);
+                std::pair <float,float> pair2 = std::make_pair (idGraphe, poids2Tot);
+                triPoids1.push_back(pair1);
+                triPoids2.push_back(pair2);
+            }
+            idSelectionnes.clear();                 // On vide le vecteur idSelectionnes
+        }
+        nombreBinaire.clear();                  // On vide le nombre binaire de ses éléments
+        ++idGraphe;
+    }
+    //std::cout<<cmpt<<std::endl;
+
+    std::sort(triPoids1.begin(), triPoids1.end(), comp);
+
+    for(int i=0; i<triPoids2.size(); ++i)
+    {
+        if(triPoids2[i].first == triPoids1[0].first)
+        {
+            yMin = triPoids2[i].second;
+        }
+    }
+
+    bool oui=false;
+    for(int i=0; i<triPoids1.size(); ++i)           // Recherche de graphes de même poids 1 total que le premier graphe
+    {
+        if(triPoids1[i].second == triPoids1[0].second)
+            oui=true;
+    }
+
+    if(!oui)             // Si aucun graphe trouvé
+    {
+        for(int i=0; i<triPoids1.size(); ++i)
+        {
+            if(triPoids1[i].second != xMin)
+            {
+                for(int j=0; j<triPoids2.size(); ++j)
+                {
+                    if(triPoids2[j].first == triPoids1[i].first)
+                    {
+                        if(triPoids2[j].second <= yMin)
+                        {
+                            yMin = triPoids2[j].second;
+                            xMin = triPoids1[i].second;
+                            pointPareto.push_back(triPoids1[i].first);
+                            pointPareto.push_back(triPoids1[i].second);
+                            pointPareto.push_back(yMin);
+                            frontierePareto.push_back(pointPareto);
+                            pointPareto.clear();
+                        }
+                        else
+                        {
+                            pointNuage.push_back(triPoids1[i].first);
+                            pointNuage.push_back(triPoids1[i].second);
+                            pointNuage.push_back(triPoids2[j].second);
+                            nuagePoints.push_back(pointNuage);
+                            pointNuage.clear();
+                        }
+                    }
+                }
+            }
+            else if(triPoids1[i].second == xMin)
+            {
+                for(int j=0; j<triPoids2.size(); ++j)
+                {
+                    if(triPoids2[j].first == triPoids1[i].first)
+                    {
+                        if(triPoids2[j].second <= yMin)
+                        {
+                            nuagePoints.push_back(frontierePareto.back());
+                            frontierePareto.pop_back();
+                            yMin = triPoids2[j].second;
+                            xMin = triPoids1[i].second;
+                            pointPareto.push_back(triPoids1[i].first);
+                            pointPareto.push_back(triPoids1[i].second);
+                            pointPareto.push_back(yMin);
+                            frontierePareto.push_back(pointPareto);
+                            pointPareto.clear();
+                        }
+                        else
+                        {
+                            pointNuage.push_back(triPoids1[i].first);
+                            pointNuage.push_back(triPoids1[i].second);
+                            pointNuage.push_back(triPoids2[j].second);
+                            nuagePoints.push_back(pointNuage);
+                            pointNuage.clear();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if(oui)
+    {
+        xMin=triPoids1[0].second;
+        pointPareto.push_back(triPoids1[0].first);
+        pointPareto.push_back(triPoids1[0].second);
+        pointPareto.push_back(yMin);
+        frontierePareto.push_back(pointPareto);
+        pointPareto.clear();
+
+        for(int i=1; i<triPoids1.size(); ++i)
+        {
+            if(triPoids1[i].second != xMin)
+            {
+                for(int j=0; j<triPoids2.size(); ++j)
+                {
+                    if(triPoids2[j].first == triPoids1[i].first)
+                    {
+                        if(triPoids2[j].second < yMin)
+                        {
+                            yMin = triPoids2[j].second;
+                            xMin = triPoids1[i].second;
+                            pointPareto.push_back(triPoids1[i].first);
+                            pointPareto.push_back(triPoids1[i].second);
+                            pointPareto.push_back(yMin);
+                            frontierePareto.push_back(pointPareto);
+                            pointPareto.clear();
+                        }
+                        else
+                        {
+                            pointNuage.push_back(triPoids1[i].first);
+                            pointNuage.push_back(triPoids1[i].second);
+                            pointNuage.push_back(triPoids2[j].second);
+                            nuagePoints.push_back(pointNuage);
+                            pointNuage.clear();
+                        }
+                    }
+                }
+            }
+            else if(triPoids1[i].second == xMin)
+            {
+                for(int j=0; j<triPoids2.size(); ++j)
+                {
+                    if(triPoids2[j].first == triPoids1[i].first)
+                    {
+                        if(triPoids2[j].second <= yMin)
+                        {
+                            nuagePoints.push_back(frontierePareto.back());
+                            frontierePareto.pop_back();
+                            yMin = triPoids2[j].second;
+                            xMin = triPoids1[i].second;
+                            pointPareto.push_back(triPoids1[i].first);
+                            pointPareto.push_back(triPoids1[i].second);
+                            pointPareto.push_back(yMin);
+                            frontierePareto.push_back(pointPareto);
+                            pointPareto.clear();
+                        }
+                        else
+                        {
+                            pointNuage.push_back(triPoids1[i].first);
+                            pointNuage.push_back(triPoids1[i].second);
+                            pointNuage.push_back(triPoids2[j].second);
+                            nuagePoints.push_back(pointNuage);
+                            pointNuage.clear();
+                        }
+                    }
+                }
+            }
+        }
+    }
+/*
+    std::cout<<std::endl<<"Frontiere Pareto"<<std::endl;
+    for(int i=0; i<frontierePareto.size(); ++i)
+    {
+        std::cout<<"idGraphe : "<<frontierePareto[i][0]<<"  poidsTot1 : "<<frontierePareto[i][1]<<"  poidstot2 : "<<frontierePareto[i][2]<<std::endl;
+    }
+
+    std::cout<<std::endl<<"Nuage"<<std::endl;
+    for(int i=0; i<nuagePoints.size(); ++i)
+    {
+        std::cout<<"idGraphe : "<<nuagePoints[i][0]<<"  poidsTot1 : "<<nuagePoints[i][1]<<"  poidstot2 : "<<nuagePoints[i][2]<<std::endl;
+    }
+*/
+}
+
+/// _________________________________________________________________
 
  Graphe::~Graphe()
 {}
+
+/// _________________________________________________________________
 
 void Graphe::dessinerGraphe() //Dessiner les graphes
 {

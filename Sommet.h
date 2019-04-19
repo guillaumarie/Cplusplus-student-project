@@ -1,5 +1,8 @@
 #ifndef SOMMET_H_INCLUDED
 #define SOMMET_H_INCLUDED
+#include <stack>
+#include <vector>
+#include <unordered_set>
 
 class Sommet
 {
@@ -10,14 +13,22 @@ class Sommet
         int m_id;
         double m_x;
         double m_y;
+        std::vector<const Sommet*> m_voisins; // tableau contenant les sommets voisins
+
 
     public : //méthodes
         Sommet(int id, double x, double y);
-        int getId(){return m_id;};
-        int getMarque1(){return m_marque1;};
-        int getMarque2(){return m_marque2;};
+        void ajouterVoisin(const Sommet*);
+        int getId() const {return m_id;};
+        int getX()const {return m_x;};
+        int getY()const {return m_y;};
+        int getMarque1(){return m_marque1;};        // Marque pour le poids 1
+        int getMarque2(){return m_marque2;};        // Marque pour le poids 2
         void marquer1(){m_marque1=true;};
         void marquer2(){m_marque2=true;};
+        int verifierCC() const;
+        std::vector<const Sommet*> getVoisins() const {return m_voisins;};
+        void setVoisins() {m_voisins.clear();};
         ~Sommet();
         int get_x();
         int get_y();
@@ -25,3 +36,5 @@ class Sommet
 
 };
 #endif // SOMMET_H_INCLUDED
+
+

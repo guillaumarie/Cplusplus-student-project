@@ -7,6 +7,11 @@
 #include <string>
 #include <vector>
 #include <allegro.h>
+#include <algorithm>
+#include <utility>
+#include <bits/stdc++.h>
+
+
 class Graphe
 {
     private :
@@ -14,6 +19,7 @@ class Graphe
         std::vector<Arete*> m_aretes;
         std::vector<Arete*> m_aretesPrim1;
         std::vector<Arete*> m_aretesPrim2;
+        int m_ordre;
         float m_poids1Tot1;           // Total du poids 1 pour Prim poids 1
         float m_poids2Tot1;           // Total du poids 2 pour Prim poids 1
         float m_poids1Tot2;           // Total du poids 1 pour Prim poids 2
@@ -21,16 +27,16 @@ class Graphe
 
 
     public :
-        //faire prim
         Graphe(std::string nomFichierCoord, std::string nomFichierPoids);
         Graphe();
         void algoPrim();
-        ~Graphe();
+        void algoPareto();
         void dessinerGraphe();
         void dessinerPrim1();
         void dessinerPrim2();
         void dessinerPareto();
         std::vector<Arete*> getm_Arete();
+        ~Graphe();
 
 
 };
