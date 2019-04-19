@@ -229,10 +229,11 @@ bool comp(const std::pair<float,float> &a, const std::pair<float,float> &b)     
 void Graphe::algoPareto()
 {
     int numeroPossibilite=0, reste=0, nombreAretes=0, compte=0, id1, id2, cc, nombre=pow(2,m_aretes.size());
-    float idGraphe=0, poids1, poids2, poids1Tot, poids2Tot, xMin, yMin;
+    float idGraphe=0, poids1, poids2, poids1Tot, poids2Tot, xMin, yActuel;
     std::vector<int> nombreBinaire;
     std::vector<int> idSelectionnes;
     std::vector<std::pair<float,float>> triPoids1;
+    std::vector<std::pair<float,float>> triPoids2Temp;
     std::vector<std::pair<float,float>> triPoids2;
     std::vector<float> pointPareto;
     std::vector<float> pointNuage;
@@ -310,7 +311,7 @@ void Graphe::algoPareto()
                 std::pair <float,float> pair1 = std::make_pair (idGraphe, poids1Tot);
                 std::pair <float,float> pair2 = std::make_pair (idGraphe, poids2Tot);
                 triPoids1.push_back(pair1);
-                triPoids2.push_back(pair2);
+                triPoids2Temp.push_back(pair2);
             }
             idSelectionnes.clear();                 // On vide le vecteur idSelectionnes
         }
@@ -319,173 +320,105 @@ void Graphe::algoPareto()
     }
     //std::cout<<cmpt<<std::endl;
 
-    std::sort(triPoids1.begin(), triPoids1.end(), comp);
 
-    for(int i=0; i<triPoids2.size(); ++i)
+    std::sort(triPoids1.begin(), triPoids1.end(), comp);        // Tri des poids1 par ordre croissant
+
+    int rang=0;
+    for(auto t1:triPoids1)
     {
-        if(triPoids2[i].first == triPoids1[0].first)
+        for(auto t2:triPoids2Temp)
         {
-            yMin = triPoids2[i].second;
-        }
-    }
-
-    bool oui=false;
-    for(int i=0; i<triPoids1.size(); ++i)           // Recherche de graphes de même poids 1 total que le premier graphe
-    {
-        if(triPoids1[i].second == triPoids1[0].second)
-            oui=true;
-    }
-
-    if(!oui)             // Si aucun graphe trouvé
-    {
-        for(int i=0; i<triPoids1.size(); ++i)
-        {
-            if(triPoids1[i].second != xMin)
+            if(t2.first==t1.first)
             {
-                for(int j=0; j<triPoids2.size(); ++j)
-                {
-                    if(triPoids2[j].first == triPoids1[i].first)
-                    {
-                        if(triPoids2[j].second <= yMin)
-                        {
-                            yMin = triPoids2[j].second;
-                            xMin = triPoids1[i].second;
-                            pointPareto.push_back(triPoids1[i].first);
-                            pointPareto.push_back(triPoids1[i].second);
-                            pointPareto.push_back(yMin);
-                            frontierePareto.push_back(pointPareto);
-                            pointPareto.clear();
-                        }
-                        else
-                        {
-                            pointNuage.push_back(triPoids1[i].first);
-                            pointNuage.push_back(triPoids1[i].second);
-                            pointNuage.push_back(triPoids2[j].second);
-                            nuagePoints.push_back(pointNuage);
-                            pointNuage.clear();
-                        }
-                    }
-                }
-            }
-            else if(triPoids1[i].second == xMin)
-            {
-                for(int j=0; j<triPoids2.size(); ++j)
-                {
-                    if(triPoids2[j].first == triPoids1[i].first)
-                    {
-                        if(triPoids2[j].second <= yMin)
-                        {
-                            nuagePoints.push_back(frontierePareto.back());
-                            frontierePareto.pop_back();
-                            yMin = triPoids2[j].second;
-                            xMin = triPoids1[i].second;
-                            pointPareto.push_back(triPoids1[i].first);
-                            pointPareto.push_back(triPoids1[i].second);
-                            pointPareto.push_back(yMin);
-                            frontierePareto.push_back(pointPareto);
-                            pointPareto.clear();
-                        }
-                        else
-                        {
-                            pointNuage.push_back(triPoids1[i].first);
-                            pointNuage.push_back(triPoids1[i].second);
-                            pointNuage.push_back(triPoids2[j].second);
-                            nuagePoints.push_back(pointNuage);
-                            pointNuage.clear();
-                        }
-                    }
-                }
+                triPoids2.push_back(t2);
+                break;
             }
         }
     }
 
-    if(oui)
-    {
-        xMin=triPoids1[0].second;
-        pointPareto.push_back(triPoids1[0].first);
-        pointPareto.push_back(triPoids1[0].second);
-        pointPareto.push_back(yMin);
-        frontierePareto.push_back(pointPareto);
-        pointPareto.clear();
+    xMin = triPoids1[0].second;     // xMin est la valeur minimale des poids1
+    yActuel = triPoids2[0].second;     // yActuel est la valeur du poids2 correspondant au poid1 min
 
-        for(int i=1; i<triPoids1.size(); ++i)
+    rang=0;
+    for(auto t1:triPoids1)
+    {
+        if(t1.second != xMin)
         {
-            if(triPoids1[i].second != xMin)
+            if(triPoids2[rang].second < yActuel)
             {
-                for(int j=0; j<triPoids2.size(); ++j)
-                {
-                    if(triPoids2[j].first == triPoids1[i].first)
-                    {
-                        if(triPoids2[j].second < yMin)
-                        {
-                            yMin = triPoids2[j].second;
-                            xMin = triPoids1[i].second;
-                            pointPareto.push_back(triPoids1[i].first);
-                            pointPareto.push_back(triPoids1[i].second);
-                            pointPareto.push_back(yMin);
-                            frontierePareto.push_back(pointPareto);
-                            pointPareto.clear();
-                        }
-                        else
-                        {
-                            pointNuage.push_back(triPoids1[i].first);
-                            pointNuage.push_back(triPoids1[i].second);
-                            pointNuage.push_back(triPoids2[j].second);
-                            nuagePoints.push_back(pointNuage);
-                            pointNuage.clear();
-                        }
-                    }
-                }
+                yActuel = triPoids2[rang].second;
+                xMin = t1.second;
+                pointPareto.push_back(t1.first);
+                pointPareto.push_back(t1.second);
+                pointPareto.push_back(yActuel);
+                frontierePareto.push_back(pointPareto);
+                pointPareto.clear();
             }
-            else if(triPoids1[i].second == xMin)
+            else
             {
-                for(int j=0; j<triPoids2.size(); ++j)
-                {
-                    if(triPoids2[j].first == triPoids1[i].first)
-                    {
-                        if(triPoids2[j].second <= yMin)
-                        {
-                            nuagePoints.push_back(frontierePareto.back());
-                            frontierePareto.pop_back();
-                            yMin = triPoids2[j].second;
-                            xMin = triPoids1[i].second;
-                            pointPareto.push_back(triPoids1[i].first);
-                            pointPareto.push_back(triPoids1[i].second);
-                            pointPareto.push_back(yMin);
-                            frontierePareto.push_back(pointPareto);
-                            pointPareto.clear();
-                        }
-                        else
-                        {
-                            pointNuage.push_back(triPoids1[i].first);
-                            pointNuage.push_back(triPoids1[i].second);
-                            pointNuage.push_back(triPoids2[j].second);
-                            nuagePoints.push_back(pointNuage);
-                            pointNuage.clear();
-                        }
-                    }
-                }
+                pointNuage.push_back(t1.first);
+                pointNuage.push_back(t1.second);
+                pointNuage.push_back(triPoids2[rang].second);
+                nuagePoints.push_back(pointNuage);
+                pointNuage.clear();
             }
         }
+        else if(t1.second == xMin)
+        {
+            if(triPoids2[rang].second < yActuel)
+            {
+                while(frontierePareto.back()[1]==xMin)
+                {
+                    nuagePoints.push_back(frontierePareto.back());
+                    frontierePareto.pop_back();
+                }
+                yActuel = triPoids2[rang].second;
+                pointPareto.push_back(t1.first);
+                pointPareto.push_back(t1.second);
+                pointPareto.push_back(yActuel);
+                frontierePareto.push_back(pointPareto);
+                pointPareto.clear();
+            }
+            else if(triPoids2[rang].second == yActuel)
+            {
+                pointPareto.push_back(t1.first);
+                pointPareto.push_back(t1.second);
+                pointPareto.push_back(yActuel);
+                frontierePareto.push_back(pointPareto);
+                pointPareto.clear();
+            }
+            else
+            {
+                pointNuage.push_back(t1.first);
+                pointNuage.push_back(t1.second);
+                pointNuage.push_back(triPoids2[rang].second);
+                nuagePoints.push_back(pointNuage);
+                pointNuage.clear();
+            }
+        }
+        ++rang;
     }
-/*
-    std::cout<<std::endl<<"Frontiere Pareto"<<std::endl;
+
+    /*
+    std::cout<<"Frontiere Pareto"<<std::endl;
     for(int i=0; i<frontierePareto.size(); ++i)
     {
         std::cout<<"idGraphe : "<<frontierePareto[i][0]<<"  poidsTot1 : "<<frontierePareto[i][1]<<"  poidstot2 : "<<frontierePareto[i][2]<<std::endl;
     }
+    */
 
-    std::cout<<std::endl<<"Nuage"<<std::endl;
-    for(int i=0; i<nuagePoints.size(); ++i)
-    {
-        std::cout<<"idGraphe : "<<nuagePoints[i][0]<<"  poidsTot1 : "<<nuagePoints[i][1]<<"  poidstot2 : "<<nuagePoints[i][2]<<std::endl;
-    }
-*/
+    /*
+        std::cout<<std::endl<<"Nuage"<<std::endl;
+        for(int i=0; i<nuagePoints.size(); ++i)
+        {
+            std::cout<<"idGraphe : "<<nuagePoints[i][0]<<"  poidsTot1 : "<<nuagePoints[i][1]<<"  poidstot2 : "<<nuagePoints[i][2]<<std::endl;
+        }
+    */
 }
 
 /// _________________________________________________________________
 
- Graphe::~Graphe()
+Graphe::~Graphe()
 {}
 
 /// _________________________________________________________________
@@ -516,16 +449,16 @@ void Graphe::dessinerGraphe() //Dessiner les graphes
         int coord_y2 = vecteur_de_sommets[1]->getY();
         line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(0,255,255));
         vecteur_de_sommets.clear();
-    for(const auto& it : m_sommets) // parcours de m_sommets
-    {
-        circlefill(monbuffer, it->getX(), it->getY(),8,makecol(220,181,255)); // on dessine tous les sommets
-        textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(130,255,167),-1,"%d",it->getId()); // on indique les indices d'aretes
+        for(const auto& it : m_sommets) // parcours de m_sommets
+        {
+            circlefill(monbuffer, it->getX(), it->getY(),8,makecol(220,181,255)); // on dessine tous les sommets
+            textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(130,255,167),-1,"%d",it->getId()); // on indique les indices d'aretes
+
+        }
+        blit(monbuffer,screen,0,0,0,0,1400,750);
 
     }
-    blit(monbuffer,screen,0,0,0,0,1400,750);
-
-   }
-    }
+}
 void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
 {
     //float poids2Tot = 0;
@@ -558,13 +491,13 @@ void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
         int coord_y2 = vecteur_de_sommets[1]->getY();
         line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(0,255,255));
         vecteur_de_sommets.clear();
-    for(const auto& it : m_sommets)
-    {
-        circlefill(monbuffer, it->getX(), it->getY(),8,makecol(220,181,255));
-        textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(130,255,167),-1,"%d",it->getId());
-    }
-     if(itA==m_aretesPrim2.back())
-            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232) ,-1, "le poids total est ( %2.2f ; %2.2f  )", m_poids1Tot1, m_poids2Tot1);
+        for(const auto& it : m_sommets)
+        {
+            circlefill(monbuffer, it->getX(), it->getY(),8,makecol(220,181,255));
+            textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(130,255,167),-1,"%d",it->getId());
+        }
+        if(itA==m_aretesPrim2.back())
+            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232),-1, "le poids total est ( %2.2f ; %2.2f  )", m_poids1Tot1, m_poids2Tot1);
         blit(monbuffer,screen,0,0,0,0,1400,750);
     }
 }
@@ -605,7 +538,7 @@ void Graphe::dessinerPrim2() // pour dessinerl'arbre couvrant de poids 1 minimum
             textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(236,202,232),-1,"%d",it->getId());
         }
         if(itA==m_aretesPrim2.back())
-            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232) ,-1, "le poids total est ( %2.2f ; %2.2f )", m_poids1Tot2, m_poids2Tot2);
+            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232),-1, "le poids total est ( %2.2f ; %2.2f )", m_poids1Tot2, m_poids2Tot2);
         blit(monbuffer,screen,0,0,0,0,1400,750);
     }
 
@@ -615,15 +548,15 @@ void Graphe::dessinerPareto()
 {
     BITMAP* monbuffer1 = create_bitmap(1400,750);
     rectfill(monbuffer1, 0, 0, 1400,750, makecol(255,255,255));
- circlefill(monbuffer1,20,730,1,makecol(140,0,255));
- rectfill(monbuffer1, 20, 730, 1340,734, makecol(140,0,255)); // Utilisation de rectfill pour pouvoir faire des axes épais
- rectfill(monbuffer1, 20, 730,24,30, makecol(140,0,255));
-  textprintf_ex(monbuffer1,font,1340+6,730+6,makecol(0,85,255),-1,"cout 1");
-  textprintf_ex(monbuffer1,font,20-6,30-12,makecol(0,85,255),-1,"cout 2");
-  blit(monbuffer1,screen,0,0,0,0,1400,750);
-  ///for(auto coor : frontiere)
-   // {
+    circlefill(monbuffer1,20,730,1,makecol(140,0,255));
+    rectfill(monbuffer1, 20, 730, 1340,734, makecol(140,0,255)); // Utilisation de rectfill pour pouvoir faire des axes épais
+    rectfill(monbuffer1, 20, 730,24,30, makecol(140,0,255));
+    textprintf_ex(monbuffer1,font,1340+6,730+6,makecol(0,85,255),-1,"cout 1");
+    textprintf_ex(monbuffer1,font,20-6,30-12,makecol(0,85,255),-1,"cout 2");
+    blit(monbuffer1,screen,0,0,0,0,1400,750);
+    ///for(auto coor : frontiere)
+    // {
     //circlefill(monbuffer1,20+coor[0],695-coor[1],makecol(0,255,0));
- // }
+// }
 }
 
