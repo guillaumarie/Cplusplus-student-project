@@ -11,20 +11,3 @@ Arete::~Arete()
 {}
 
 
-
-float Arete::getPoids1()
-{
-    return m_poids1;
-}
-float Arete::getPoids2()
-{
-    return m_poids2;
-}
-int Arete::getId1()
-{
-    return m_id1;
-}
-int Arete::getId2()
-{
-    return m_id2;
-}

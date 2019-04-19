@@ -42,18 +42,19 @@ int main()
     auto t_start = std::chrono::high_resolution_clock::now();       // Début horloge temps réel
 
 
-    Graphe graphe("broadway.txt", "broadway_weights_0.txt");
+    Graphe graphe("manhattan.txt", "manhattan_weights_0.txt");
     graphe.algoPrim();
     graphe.algoPareto();
-    allegro();
+    //allegro();
 
-
-  /* std::cout << "Que voulez vous afficher ?"<<std::endl;
-    std::cout<<"1-Afficher le graphe"<<std::endl;
-    std::cout<<"2-Affcher le premier arbre couvrantde poids minimum"<<std::endl;
-    std::cout<<"3-Afficher le deuxieme arbre couvant de poids minimum "<<std::endl;
-    std::cout<<"4-Afficher le graphe de Pareto "<<std::endl;
-    std::cin >> choix;*/
+    /*
+        std::cout << "Que voulez vous afficher ?"<<std::endl;
+        std::cout<<"1-Afficher le graphe"<<std::endl;
+        std::cout<<"2-Affcher le premier arbre couvrantde poids minimum"<<std::endl;
+        std::cout<<"3-Afficher le deuxieme arbre couvant de poids minimum "<<std::endl;
+        std::cout<<"4-Afficher le graphe de Pareto "<<std::endl;
+        std::cin >> choix;
+    */
 
     std::clock_t c_end = std::clock();              // Fin horloge temps cpu
     auto t_end = std::chrono::high_resolution_clock::now();     // Fin horloge temps réel
@@ -61,10 +62,10 @@ int main()
     std::cout << "Total real time: " << std::chrono::duration<double, std::milli>(t_end-t_start).count() << " ms" << std::endl;
 
 
-   while(!key[KEY_ESC])
-   {
+    while(!key[KEY_ESC])
         affichage_menu(graphe);
-   }
+
+
     return 0;
 }
 END_OF_MAIN();

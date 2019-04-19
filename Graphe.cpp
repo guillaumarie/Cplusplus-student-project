@@ -510,16 +510,16 @@ void Graphe::dessinerGraphe() //Dessiner les graphes
             if  (sommetId==id_2)
                 vecteur_de_sommets.push_back(itt);
         }
-        int coord_x1 = vecteur_de_sommets[0]->get_x(); // pour dessiner les aretes on recuperes les coordonees des 2 sommets
-        int coord_y1 = vecteur_de_sommets[0]->get_y();
-        int coord_x2 = vecteur_de_sommets[1]->get_x();
-        int coord_y2 = vecteur_de_sommets[1]->get_y();
+        int coord_x1 = vecteur_de_sommets[0]->getX(); // pour dessiner les aretes on recuperes les coordonees des 2 sommets
+        int coord_y1 = vecteur_de_sommets[0]->getY();
+        int coord_x2 = vecteur_de_sommets[1]->getX();
+        int coord_y2 = vecteur_de_sommets[1]->getY();
         line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(0,255,255));
         vecteur_de_sommets.clear();
     for(const auto& it : m_sommets) // parcours de m_sommets
     {
-        circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(220,181,255)); // on dessine tous les sommets
-        textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId()); // on indique les indices d'aretes
+        circlefill(monbuffer, it->getX(), it->getY(),8,makecol(220,181,255)); // on dessine tous les sommets
+        textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(130,255,167),-1,"%d",it->getId()); // on indique les indices d'aretes
 
     }
     blit(monbuffer,screen,0,0,0,0,1400,750);
@@ -552,16 +552,16 @@ void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
             if  (sommetId==id_2)
                 vecteur_de_sommets.push_back(itt);
         }
-        int coord_x1 = vecteur_de_sommets[0]->get_x();
-        int coord_y1 = vecteur_de_sommets[0]->get_y();
-        int coord_x2 = vecteur_de_sommets[1]->get_x();
-        int coord_y2 = vecteur_de_sommets[1]->get_y();
+        int coord_x1 = vecteur_de_sommets[0]->getX();
+        int coord_y1 = vecteur_de_sommets[0]->getY();
+        int coord_x2 = vecteur_de_sommets[1]->getX();
+        int coord_y2 = vecteur_de_sommets[1]->getY();
         line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(0,255,255));
         vecteur_de_sommets.clear();
     for(const auto& it : m_sommets)
     {
-        circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(220,181,255));
-        textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId());
+        circlefill(monbuffer, it->getX(), it->getY(),8,makecol(220,181,255));
+        textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(130,255,167),-1,"%d",it->getId());
     }
      if(itA==m_aretesPrim2.back())
             textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232) ,-1, "le poids total est ( %2.2f ; %2.2f  )", m_poids1Tot1, m_poids2Tot1);
@@ -592,17 +592,17 @@ void Graphe::dessinerPrim2() // pour dessinerl'arbre couvrant de poids 1 minimum
             if  (sommetId==id_2)
                 vecteur_de_sommets.push_back(itt);
         }
-        int coord_x1 = vecteur_de_sommets[0]->get_x();
-        int coord_y1 = vecteur_de_sommets[0]->get_y();
-        int coord_x2 = vecteur_de_sommets[1]->get_x();
-        int coord_y2 = vecteur_de_sommets[1]->get_y();
+        int coord_x1 = vecteur_de_sommets[0]->getX();
+        int coord_y1 = vecteur_de_sommets[0]->getY();
+        int coord_x2 = vecteur_de_sommets[1]->getX();
+        int coord_y2 = vecteur_de_sommets[1]->getY();
         line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(254,120,251));
         vecteur_de_sommets.clear();
 
         for(const auto& it : m_sommets)
         {
-            circlefill(monbuffer, it->get_x(), it->get_y(),8,makecol(255,255,183));
-            textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(236,202,232),-1,"%d",it->getId());
+            circlefill(monbuffer, it->getX(), it->getY(),8,makecol(255,255,183));
+            textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(236,202,232),-1,"%d",it->getId());
         }
         if(itA==m_aretesPrim2.back())
             textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232) ,-1, "le poids total est ( %2.2f ; %2.2f )", m_poids1Tot2, m_poids2Tot2);

@@ -32,6 +32,9 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Linker>
+			<Add library="../../../../../../../../../../Program Files (x86)/CodeBlocks/MinGW/lib/liballeg44.dll.a" />
+		</Linker>
 		<Unit filename="Arete.cpp" />
 		<Unit filename="Arete.h" />
 		<Unit filename="Graphe.cpp" />
@@ -39,6 +42,8 @@
 		<Unit filename="Sommet.cpp" />
 		<Unit filename="Sommet.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="menu.cpp" />
+		<Unit filename="menu.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

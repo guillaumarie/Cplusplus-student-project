@@ -1,7 +1,6 @@
 #ifndef MENU_H_INCLUDED
 #define MENU_H_INCLUDED
 #include "Graphe.h"
-#include "menu.h"
 #include <allegro.h>
 #include <iostream>
 #include "Sommet.h"
