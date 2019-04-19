@@ -19,6 +19,9 @@ class Sommet
         void marquer1(){m_marque1=true;};
         void marquer2(){m_marque2=true;};
         ~Sommet();
+        int get_x();
+        int get_y();
+
 
 };
 #endif // SOMMET_H_INCLUDED
