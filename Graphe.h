@@ -21,6 +21,8 @@ class Graphe
         Graphe(std::string nomFichierCoord, std::string nomFichierPoids);
         Graphe();
         void algoPrim();
+        void dessinerPrim2();
+        void dessinerPrim2();
         ~Graphe();
 
 };
