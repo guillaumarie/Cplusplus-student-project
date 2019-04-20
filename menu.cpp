@@ -23,7 +23,7 @@ void affichage_menu (Graphe graphe) // fonction pour afficher le menu
     BITMAP *bouton5= load_bitmap("clique5.bmp",NULL);
     //blit(menu_all_options,buffer_menu,0,0,0,0,1400,75);
     //blit(buffer_menu,screen,0,0,0,0,1400,750);
-    int choix;
+    int choix=0;
 
     while (!key[KEY_ESC]) //pour quitter, appuyer sur la touche echap
         {
@@ -101,7 +101,6 @@ void affichage_menu (Graphe graphe) // fonction pour afficher le menu
  switch(choix)
     {
         case 1 :
-                std::cout << "AAAAAAAAAAAAAAAAAAAAAA";
                 graphe.dessinerGraphe();
 
                 while (!key[KEY_SPACE]){}  // pour retourner au menu appuyer sur la barre d'espace
@@ -109,7 +108,7 @@ void affichage_menu (Graphe graphe) // fonction pour afficher le menu
             break;
 
         case 2 :
-            graphe.dessinerPrim1();
+           graphe.dessinerPrim1();
             while (!key[KEY_SPACE]){} // pour retourner au menu appuyer sur la barre d'espace
                 rest(100);
             break;
@@ -119,8 +118,7 @@ void affichage_menu (Graphe graphe) // fonction pour afficher le menu
             while (!key[KEY_SPACE]){} // pour retourner au menu appuyer sur la barre d'espace
                 rest(100);
             break;
-      case 4 :
-                          std::cout << "BBBBBBBBBBBBBBBBBB";
+       case 4 :
 
            graphe.algoPareto();
            graphe.dessinerPareto(graphe.getFrontier(),graphe.getNuage());

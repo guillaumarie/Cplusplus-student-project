@@ -469,20 +469,7 @@ void Graphe::algoPareto()
         }
     }
 }
-/*
-    std::cout<<std::endl<<"Frontiere Pareto"<<std::endl;
-    for(int i=0; i<frontierePareto.size(); ++i)
-    {
-        std::cout<<"idGraphe : "<<frontierePareto[i][0]<<"  poidsTot1 : "<<frontierePareto[i][1]<<"  poidstot2 : "<<frontierePareto[i][2]<<std::endl;
-    }
 
-    std::cout<<std::endl<<"Nuage"<<std::endl;
-    for(int i=0; i<nuagePoints.size(); ++i)
-    {
-        std::cout<<"idGraphe : "<<nuagePoints[i][0]<<"  poidsTot1 : "<<nuagePoints[i][1]<<"  poidstot2 : "<<nuagePoints[i][2]<<std::endl;
-    }
-*/
-//}
 
 /// _________________________________________________________________
 
@@ -527,19 +514,19 @@ void Graphe::dessinerGraphe() //Dessiner les graphes
 
    }
     }
+
 void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
 {
     //float poids2Tot = 0;
     //float poids1Tot =0;
     BITMAP* monbuffer = create_bitmap(1400,750);
     std::vector<Sommet*> vecteur_de_sommets;
+     int id_1;
+     int id_2;
 
     for(const auto& itA : m_aretesPrim1)
     {
-        std::cout <<"test";
-        int id_1;
         id_1=  itA->getId1();
-        int id_2;
         id_2=  itA->getId2();
         //poids1Tot = poids1Tot+itA->getPoids1();
         //poids2Tot = poids2Tot+itA->getPoids2();
@@ -559,13 +546,13 @@ void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
         int coord_y2 = vecteur_de_sommets[1]->getY();
         line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(0,255,255));
         vecteur_de_sommets.clear();
-    for(const auto& it : m_sommets)
-    {
-        circlefill(monbuffer, it->getX(), it->getY(),8,makecol(220,181,255));
-        textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(130,255,167),-1,"%d",it->getId());
-    }
-     if(itA==m_aretesPrim2.back())
-            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232) ,-1, "le poids total est ( %2.2f ; %2.2f  )", m_poids1Tot1, m_poids2Tot1);
+        for(const auto& it : m_sommets)
+        {
+            circlefill(monbuffer, it->getX(), it->getY(),8,makecol(220,181,255));
+            textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(130,255,167),-1,"%d",it->getId());
+        }
+        if(itA==m_aretesPrim2.back())
+            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232),-1, "le poids total est ( %2.2f ; %2.2f  )", m_poids1Tot1, m_poids2Tot1);
         blit(monbuffer,screen,0,0,0,0,1400,750);
     }
 }
@@ -606,13 +593,118 @@ void Graphe::dessinerPrim2() // pour dessinerl'arbre couvrant de poids 1 minimum
             textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(236,202,232),-1,"%d",it->getId());
         }
         if(itA==m_aretesPrim2.back())
-            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232) ,-1, "le poids total est ( %2.2f ; %2.2f )", m_poids1Tot2, m_poids2Tot2);
+            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232),-1, "le poids total est ( %2.2f ; %2.2f )", m_poids1Tot2, m_poids2Tot2);
         blit(monbuffer,screen,0,0,0,0,1400,750);
     }
 
 }
+/*void Graphe::dessinerPrim1() //Dessiner les graphes
+{
+    BITMAP* monbuffer = create_bitmap(1400,750);
+    std::vector<Sommet*> vecteur_de_sommets;
+     int id_1;
+     int id_2;
+    for(const auto& itA : m_aretesPrim1)     // parcours de m_aretes
+    {
+        id_1=  itA->getId1();
+        id_2=  itA->getId2();
+    }
+        for(const auto& itt : m_sommets) // parcours de m_sommets
+        {
 
-///std::vector<std::vector<float>>
+            int sommetId = itt->getId();
+            if (sommetId ==id_1)
+                vecteur_de_sommets.push_back(itt);
+
+            if  (sommetId==id_2)
+                vecteur_de_sommets.push_back(itt);
+        int coord_x1 = vecteur_de_sommets[0]->getX(); // pour dessiner les aretes on recuperes les coordonees des 2 sommets
+        int coord_y1 = vecteur_de_sommets[0]->getY();
+        int coord_x2 = vecteur_de_sommets[1]->getX();
+        int coord_y2 = vecteur_de_sommets[1]->getY();
+        line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(0,255,255));
+        vecteur_de_sommets.clear();
+        }
+
+    for(const auto& it : m_sommets) // parcours de m_sommets
+    {
+        circlefill(monbuffer, it->getX(), it->getY(),8,makecol(220,181,255)); // on dessine tous les sommets
+        textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(130,255,167),-1,"%d",it->getId()); // on indique les indices d'aretes
+
+    }
+    blit(monbuffer,screen,0,0,0,0,1400,750);
+
+   }
+
+/*void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
+{
+    int poids2Tot = 0;
+    int poids1Tot =0;
+    BITMAP* monbuffer = create_bitmap(1400,750);
+    //float poids2Tot = 0;
+    //float poids1Tot =0;
+    //BITMAP* monbuffer = create_bitmap(1400,750);
+    std::vector<Sommet*> vecteur_de_sommets;
+
+    for(const auto& itA : m_aretesPrim1)
+    {
+
+        int id_1;
+        id_1=  itA->getId1();
+        int id_2;
+        id_2=  itA->getId2();
+        poids1Tot = poids1Tot+itA->getPoids1();
+        poids2Tot = poids2Tot+itA->getPoids2();
+        //poids1Tot = poids1Tot+itA->getPoids1();
+        //poids2Tot = poids2Tot+itA->getPoids2();
+
+        for(const auto& it : m_sommets)
+        {
+
+        circlefill(screen, it->get_x(), it->get_y(),8,makecol(220,181,255));
+
+        textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(130,255,167),-1,"%d",it->getId());
+    }
+     if(itA==m_aretesPrim2.back())
+            textprintf_centre_ex(monbuffer,font,200,400,makecol(236,202,232) ,-1, "le poids total est ( %d ; %d )", poids1Tot, poids2Tot);
+        blit(monbuffer,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232) ,-1, "le poids total est ( %2.2f ; %2.2f  )", m_poids1Tot1, m_poids2Tot1);
+        blit(monbuffer,screen,0,0,0,0,1400,750);
+    }
+}*/
+
+/*void Graphe::dessinerPrim2() // pour dessinerl'arbre couvrant de poids 1 minimum
+{
+    int poids2Tot = 0;
+    int poids1Tot =0;
+    BITMAP* monbuffer = create_bitmap(SCREEN_W,SCREEN_H);
+    //float poids2Tot = 0;
+    //float poids1Tot =0;
+    BITMAP* monbuffer = create_bitmap(1400,750);
+    std::vector<Sommet*> vecteur_de_sommets;
+    for(const auto& itA : m_aretesPrim2)
+    {
+        int id_1;
+        id_1=  itA->getId1();
+        int id_2;
+        id_2=  itA->getId2();
+        poids1Tot = poids1Tot+itA->getPoids1();
+        poids2Tot = poids2Tot+itA->getPoids2();
+        //poids1Tot = poids1Tot+itA->getPoids1();
+        //poids2Tot = poids2Tot+itA->getPoids2();
+
+        for(const auto& itt : m_sommets)
+        {
+            textprintf_ex(monbuffer,font,it->get_x()+12,it->get_y()-12,makecol(236,202,232),-1,"%d",it->getId());
+        }
+        if(itA==m_aretesPrim2.back())
+            textprintf_centre_ex(monbuffer,font,200,400,makecol(236,202,232) ,-1, "le poids total est ( %d ; %d )", poids1Tot, poids2Tot);
+        blit(monbuffer,screen,0,0,0,0,SCREEN_W,SCREEN_H);
+            textprintf_centre_ex(monbuffer,font,200,690,makecol(236,202,232) ,-1, "le poids total est ( %2.2f ; %2.2f )", m_poids1Tot2, m_poids2Tot2);
+        blit(monbuffer,screen,0,0,0,0,1400,750);
+    }
+
+}*/
 void Graphe::dessinerPareto(std::vector<std::vector<float>> frontierePareto,std::vector<std::vector<float>>nuagePoints)
 {
     std::vector<float> tmp;
