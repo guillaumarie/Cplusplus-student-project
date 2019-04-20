@@ -100,13 +100,13 @@ void Graphe::algoPrim()
 
     do //tant que tous les sommets ne sont pas tous découverts
     {
-        //parcourir toutes les aretes et garder celle qui a le plus petit poids parmis celles qui ont le sommet choisi comme extrémité
+        //parcourir toutes les aretes et garder celle qui a le plus petit poids parmi celles qui ont le sommet choisi comme extrémité
         Arete* meilleureArete=nullptr;
         poids1 = 10000.0;
         poids2 = 10000.0;
 
 
-        /// Parcours pour poids 2
+        /// Parcours pour poids 1
 
         for(auto j:m_aretes)
         {
@@ -209,6 +209,8 @@ void Graphe::algoPrim()
     }
 }
 
+
+
 std::vector<Arete*> Graphe::getm_Arete()
 {
     return m_aretes;
@@ -216,10 +218,7 @@ std::vector<Arete*> Graphe::getm_Arete()
 
 
 
-
-
-
-/// _________________________________________________________________
+/// _______________________________ALGORITHME DE PARETO_____________________________
 
 bool comp(const std::pair<float,float> &a, const std::pair<float,float> &b)     // Comparateur utilisé pour trié les poids à la fin de l'algorithme
 {
@@ -237,8 +236,6 @@ void Graphe::algoPareto()
     std::vector<std::pair<float,float>> triPoids2;
     std::vector<float> pointPareto;
     std::vector<float> pointNuage;
-    std::vector<std::vector<float>> frontierePareto;
-    std::vector<std::vector<float>> nuagePoints;
     //int cmpt=0;
 
 
@@ -323,7 +320,6 @@ void Graphe::algoPareto()
 
     std::sort(triPoids1.begin(), triPoids1.end(), comp);        // Tri des poids1 par ordre croissant
 
-    int rang=0;
     for(auto t1:triPoids1)
     {
         for(auto t2:triPoids2Temp)
@@ -339,7 +335,7 @@ void Graphe::algoPareto()
     xMin = triPoids1[0].second;     // xMin est la valeur minimale des poids1
     yActuel = triPoids2[0].second;     // yActuel est la valeur du poids2 correspondant au poid1 min
 
-    rang=0;
+    int rang=0;
     for(auto t1:triPoids1)
     {
         if(t1.second != xMin)
@@ -351,7 +347,7 @@ void Graphe::algoPareto()
                 pointPareto.push_back(t1.first);
                 pointPareto.push_back(t1.second);
                 pointPareto.push_back(yActuel);
-                frontierePareto.push_back(pointPareto);
+                m_frontierePareto.push_back(pointPareto);
                 pointPareto.clear();
             }
             else
@@ -359,7 +355,7 @@ void Graphe::algoPareto()
                 pointNuage.push_back(t1.first);
                 pointNuage.push_back(t1.second);
                 pointNuage.push_back(triPoids2[rang].second);
-                nuagePoints.push_back(pointNuage);
+                m_nuagePoints.push_back(pointNuage);
                 pointNuage.clear();
             }
         }
@@ -367,16 +363,16 @@ void Graphe::algoPareto()
         {
             if(triPoids2[rang].second < yActuel)
             {
-                while(frontierePareto.back()[1]==xMin)
+                while(m_frontierePareto.back()[1]==xMin)
                 {
-                    nuagePoints.push_back(frontierePareto.back());
-                    frontierePareto.pop_back();
+                    m_nuagePoints.push_back(m_frontierePareto.back());
+                    m_frontierePareto.pop_back();
                 }
                 yActuel = triPoids2[rang].second;
                 pointPareto.push_back(t1.first);
                 pointPareto.push_back(t1.second);
                 pointPareto.push_back(yActuel);
-                frontierePareto.push_back(pointPareto);
+                m_frontierePareto.push_back(pointPareto);
                 pointPareto.clear();
             }
             else if(triPoids2[rang].second == yActuel)
@@ -384,7 +380,7 @@ void Graphe::algoPareto()
                 pointPareto.push_back(t1.first);
                 pointPareto.push_back(t1.second);
                 pointPareto.push_back(yActuel);
-                frontierePareto.push_back(pointPareto);
+                m_frontierePareto.push_back(pointPareto);
                 pointPareto.clear();
             }
             else
@@ -392,7 +388,7 @@ void Graphe::algoPareto()
                 pointNuage.push_back(t1.first);
                 pointNuage.push_back(t1.second);
                 pointNuage.push_back(triPoids2[rang].second);
-                nuagePoints.push_back(pointNuage);
+                m_nuagePoints.push_back(pointNuage);
                 pointNuage.clear();
             }
         }
@@ -414,6 +410,175 @@ void Graphe::algoPareto()
             std::cout<<"idGraphe : "<<nuagePoints[i][0]<<"  poidsTot1 : "<<nuagePoints[i][1]<<"  poidstot2 : "<<nuagePoints[i][2]<<std::endl;
         }
     */
+}
+
+
+
+/// _______________________________ALGORITHME DE DIJKSTRA_____________________________
+
+void Graphe::algoDijkstra()
+{
+    int numeroPossibilite=0, reste=0, nombreAretes=0, compte=0, id1, id2, cc, nombre=pow(2,m_aretes.size());
+    float idGraphe=0, poids1, poids2, poids1Tot, poids2Tot, xMin, yActuel;
+    std::vector<int> nombreBinaire;
+    std::vector<int> idSelectionnes;
+    std::vector<std::pair<float,float>> triPoids1;
+    std::vector<std::pair<float,float>> triPoids2Temp;
+    std::vector<std::pair<float,float>> triPoids2;
+    std::vector<float> pointPareto;
+    std::vector<float> pointNuage;
+    int cmpt=0;
+
+
+    for(int i=0; i<nombre; ++i )        // Parcours des possibilités
+    {
+        numeroPossibilite=i;                // Solution possible traitée en ce moment
+        compte=0, cc=0;
+
+        /// Conversion de numeroPossibilte en binaire
+        // On commence par créer une liste en binaire, chaque indice correspondant à une arête
+        do
+        {
+            reste=numeroPossibilite%2;             // On calcule son reste dans la division euclidienne par 2
+            nombreBinaire.push_back(reste);         // On ajoute le reste (0 ou 1) au vecteur nombreBinaire
+            numeroPossibilite = numeroPossibilite/2;           // Et on garde le quotient de la division
+        }
+        while(numeroPossibilite >= 2);                // Tant que le nombre est supérieur à 2
+        nombreBinaire.push_back(numeroPossibilite);     // On ajoute le dernier quotient (0 ou 1) au vecteur nombreBinaire
+
+        /// Calcul du nombre d'arêtes
+        nombreAretes = 0;
+        for(auto n:nombreBinaire)        // Parcours des 0 et 1 du vecteur nombreBinaire (pour étudier les arêtes sélectionnées)
+        {
+            if(n == 1)        // Si l'élément est égal à 1
+                ++nombreAretes;            // On incrémente le nombre de 1 dans le nombre binaire (donc le nombre d'arêtes sélectionnées)
+        }
+
+
+        /// Si nombreAretes = m_ordre-1, on récupère les identifiants des arêtes sélectionnées
+        /// Puis on répertorie tous les voisins
+        /// Puis on s'assure que tous les sommets sont bien dans la même composante connexe
+        /// Si oui, on ajoute toutes les arêtes de la possibilité étudiée à un vecteur d'arêtes
+        for(auto n:nombreBinaire)        // Parcours de tous les éléments (0 ou 1) du nombre binaire
+        {
+            if(n == 1)      // Si l'élément du nombre binaire est égal à 1
+            {
+                idSelectionnes.push_back(compte);
+                id1 = m_aretes[compte]->getId1();
+                id2 = m_aretes[compte]->getId2();
+                m_sommets[id1]->ajouterVoisin(m_sommets[id2]);          // On ajoute le sommet id2 aux voisins de id1
+                m_sommets[id2]->ajouterVoisin(m_sommets[id1]);          // On ajoute le sommet id2 aux voisins de id1
+            }
+            ++compte;
+        }
+        cc = m_sommets[id1]->verifierCC();        // Recherche des composantes connexes à partir du sommet id1 (n'importe quel sommet)
+
+        for(auto id:idSelectionnes)         // Réinitialisation des voisins pour chaque sommet dont on les a répertoriés dans la partie précédente
+        {
+            id1 = m_aretes[id]->getId1();
+            id2 = m_aretes[id]->getId2();
+            m_sommets[id1]->setVoisins();
+            m_sommets[id2]->setVoisins();
+        }
+
+        poids1Tot=0;                 // Réinitialisation des poids 1 et 2 totaux
+        poids2Tot=0;
+        bool decouverts = true;
+        int id1,id2;
+        float poids1, poids2;
+        if(cc == m_ordre)      // Si tous les sommets sont dans la composante connexe au départ de n'importe quel sommet (ici : id1)
+        {
+            m_sommets[m_aretes[idSelectionnes[0]]->getId1()]->marquer1();
+            m_sommets[m_aretes[idSelectionnes[0]]->getId1()]->marquer1();
+
+            do //tant que tous les sommets ne sont pas tous découverts
+            {
+                //parcourir toutes les aretes et garder celle qui a le plus petit poids parmis celles qui ont le sommet choisi comme extrémité
+                Arete* meilleureArete=nullptr;
+                poids1 = 10000.0;
+                poids2 = 10000.0;
+
+
+                /// Parcours pour poids 1
+
+                for(auto id:idSelectionnes)         // Réinitialisation des voisins pour chaque sommet dont on les a répertoriés dans la partie précédente
+                {
+                    id1 = m_aretes[id]->getId1();       // Id des sommets
+                    id2 = m_aretes[id]->getId2();
+
+                    if (   ( m_sommets[id1]->getMarque1() && !m_sommets[id2]->getMarque1())
+                            || ( m_sommets[id2]->getMarque1() && !m_sommets[id1]->getMarque1())  )
+                    {
+                        if (j->getPoids1() < poids1)
+                        {
+                            poids1 = j->getPoids1();
+                            meilleureArete = j;
+                        }
+                    }
+                }
+
+                // à ce niveau, meilleureArete est l'arete de poids min
+                id1 = meilleureArete->getId1();
+                id2 = meilleureArete->getId2();
+
+                if (  m_sommets[id1]->getMarque1() && !m_sommets[id2]->getMarque1() )
+                {
+                    m_sommets[id2]->marquer1();
+                }
+                if (  m_sommets[id2]->getMarque1() && !m_sommets[id1]->getMarque1() )
+                {
+                    m_sommets[id1]->marquer1();
+                }
+
+                m_aretesPrim1.push_back(meilleureArete);
+
+                // --- vérif sortie boucle while
+                decouverts = true;
+                for(auto i:m_sommets) //on parcours tous les sommets
+                {
+                    if(i->getMarque1() == false || i->getMarque2() == false)
+                        decouverts = false; //si on en trouve un qui n'est pas marqué on passe le découvert total à false
+                }
+                // --- fin vérif sortie boucle while
+
+            }
+            while(decouverts == false);
+
+
+            // à ce niveau, les aretes de l'arbre de poids minimum
+            m_poids1Tot1=0;
+            m_poids2Tot1=0;
+            m_poids1Tot2=0;
+            m_poids2Tot2=0;
+            for(auto a:m_aretesPrim1)
+            {
+                poids1=a->getPoids1();
+                poids2=a->getPoids2();
+                m_poids1Tot1=m_poids1Tot1+poids1;
+                m_poids2Tot1=m_poids2Tot1+poids2;
+            }
+
+            for(auto id:idSelectionnes)       // On parcourt tous les idSelectionnés
+            {
+                poids1 = m_aretes[id]->getPoids1();       // Poids 1 de l'arête
+                poids2 = m_aretes[id]->getPoids2();       // Poids 2 de l'arête
+                poids1Tot = poids1Tot + poids1;       // On additionne le poids 1 au poids 1 total
+                poids2Tot = poids2Tot + poids2;       // On additionne le poids 2 au poids 2 total
+            }
+            ++cmpt;
+
+            std::pair <float,float> pair1 = std::make_pair (idGraphe, poids1Tot);
+            std::pair <float,float> pair2 = std::make_pair (idGraphe, poids2Tot);
+            triPoids1.push_back(pair1);
+            triPoids2Temp.push_back(pair2);
+        }
+        idSelectionnes.clear();                 // On vide le vecteur idSelectionnes
+        nombreBinaire.clear();                  // On vide le nombre binaire de ses éléments
+        ++idGraphe;
+    }
+    std::cout<<cmpt<<std::endl;
+
+
 }
 
 /// _________________________________________________________________
