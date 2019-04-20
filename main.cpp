@@ -44,8 +44,8 @@ int main()
 
     Graphe graphe("broadway.txt", "broadway_weights_0.txt");
     graphe.algoPrim();
-    graphe.algoPareto();
-    //graphe.algoDijkstra();
+    //graphe.algoPareto();
+    graphe.algoDijkstra();
     //allegro();
 
     /*
