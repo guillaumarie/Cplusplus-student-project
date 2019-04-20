@@ -236,8 +236,8 @@ void Graphe::algoPareto()
     std::vector<std::pair<float,float>> triPoids2;
     std::vector<float> pointPareto;
     std::vector<float> pointNuage;
-    std::vector<std::vector<float>> frontierePareto;
-    std::vector<std::vector<float>> nuagePoints;
+    //std::vector<std::vector<float>> frontierePareto;
+    //std::vector<std::vector<float>> nuagePoints;
     //int cmpt=0;
 
 
@@ -353,7 +353,7 @@ void Graphe::algoPareto()
                             pointPareto.push_back(triPoids1[i].first);
                             pointPareto.push_back(triPoids1[i].second);
                             pointPareto.push_back(yMin);
-                            frontierePareto.push_back(pointPareto);
+                            m_frontierePareto.push_back(pointPareto);
                             pointPareto.clear();
                         }
                         else
@@ -361,7 +361,7 @@ void Graphe::algoPareto()
                             pointNuage.push_back(triPoids1[i].first);
                             pointNuage.push_back(triPoids1[i].second);
                             pointNuage.push_back(triPoids2[j].second);
-                            nuagePoints.push_back(pointNuage);
+                            m_nuagePoints.push_back(pointNuage);
                             pointNuage.clear();
                         }
                     }
@@ -375,14 +375,14 @@ void Graphe::algoPareto()
                     {
                         if(triPoids2[j].second <= yMin)
                         {
-                            nuagePoints.push_back(frontierePareto.back());
-                            frontierePareto.pop_back();
+                            m_nuagePoints.push_back(m_frontierePareto.back());
+                            m_frontierePareto.pop_back();
                             yMin = triPoids2[j].second;
                             xMin = triPoids1[i].second;
                             pointPareto.push_back(triPoids1[i].first);
                             pointPareto.push_back(triPoids1[i].second);
                             pointPareto.push_back(yMin);
-                            frontierePareto.push_back(pointPareto);
+                            m_frontierePareto.push_back(pointPareto);
                             pointPareto.clear();
                         }
                         else
@@ -390,7 +390,7 @@ void Graphe::algoPareto()
                             pointNuage.push_back(triPoids1[i].first);
                             pointNuage.push_back(triPoids1[i].second);
                             pointNuage.push_back(triPoids2[j].second);
-                            nuagePoints.push_back(pointNuage);
+                            m_nuagePoints.push_back(pointNuage);
                             pointNuage.clear();
                         }
                     }
@@ -405,7 +405,7 @@ void Graphe::algoPareto()
         pointPareto.push_back(triPoids1[0].first);
         pointPareto.push_back(triPoids1[0].second);
         pointPareto.push_back(yMin);
-        frontierePareto.push_back(pointPareto);
+        m_frontierePareto.push_back(pointPareto);
         pointPareto.clear();
 
         for(int i=1; i<triPoids1.size(); ++i)
@@ -423,7 +423,7 @@ void Graphe::algoPareto()
                             pointPareto.push_back(triPoids1[i].first);
                             pointPareto.push_back(triPoids1[i].second);
                             pointPareto.push_back(yMin);
-                            frontierePareto.push_back(pointPareto);
+                            m_frontierePareto.push_back(pointPareto);
                             pointPareto.clear();
                         }
                         else
@@ -431,7 +431,7 @@ void Graphe::algoPareto()
                             pointNuage.push_back(triPoids1[i].first);
                             pointNuage.push_back(triPoids1[i].second);
                             pointNuage.push_back(triPoids2[j].second);
-                            nuagePoints.push_back(pointNuage);
+                            m_nuagePoints.push_back(pointNuage);
                             pointNuage.clear();
                         }
                     }
@@ -445,14 +445,14 @@ void Graphe::algoPareto()
                     {
                         if(triPoids2[j].second <= yMin)
                         {
-                            nuagePoints.push_back(frontierePareto.back());
-                            frontierePareto.pop_back();
+                            m_nuagePoints.push_back(m_frontierePareto.back());
+                            m_frontierePareto.pop_back();
                             yMin = triPoids2[j].second;
                             xMin = triPoids1[i].second;
                             pointPareto.push_back(triPoids1[i].first);
                             pointPareto.push_back(triPoids1[i].second);
                             pointPareto.push_back(yMin);
-                            frontierePareto.push_back(pointPareto);
+                            m_frontierePareto.push_back(pointPareto);
                             pointPareto.clear();
                         }
                         else
@@ -460,7 +460,7 @@ void Graphe::algoPareto()
                             pointNuage.push_back(triPoids1[i].first);
                             pointNuage.push_back(triPoids1[i].second);
                             pointNuage.push_back(triPoids2[j].second);
-                            nuagePoints.push_back(pointNuage);
+                            m_nuagePoints.push_back(pointNuage);
                             pointNuage.clear();
                         }
                     }
@@ -468,6 +468,7 @@ void Graphe::algoPareto()
             }
         }
     }
+}
 /*
     std::cout<<std::endl<<"Frontiere Pareto"<<std::endl;
     for(int i=0; i<frontierePareto.size(); ++i)
@@ -481,7 +482,7 @@ void Graphe::algoPareto()
         std::cout<<"idGraphe : "<<nuagePoints[i][0]<<"  poidsTot1 : "<<nuagePoints[i][1]<<"  poidstot2 : "<<nuagePoints[i][2]<<std::endl;
     }
 */
-}
+//}
 
 /// _________________________________________________________________
 
@@ -610,9 +611,14 @@ void Graphe::dessinerPrim2() // pour dessinerl'arbre couvrant de poids 1 minimum
     }
 
 }
-///std::vector<std::vector<float>> frontiere,std::vector<std::vector<float>> combiPareto
-void Graphe::dessinerPareto()
+
+///std::vector<std::vector<float>>
+void Graphe::dessinerPareto(std::vector<std::vector<float>> frontierePareto,std::vector<std::vector<float>>nuagePoints)
 {
+    std::vector<float> tmp;
+    for(auto coor : frontierePareto)
+        tmp.push_back(coor[1]);
+    float max_coor = (*std::max_element(tmp.begin(),tmp.end()));
     BITMAP* monbuffer1 = create_bitmap(1400,750);
     rectfill(monbuffer1, 0, 0, 1400,750, makecol(255,255,255));
  circlefill(monbuffer1,20,730,1,makecol(140,0,255));
@@ -621,9 +627,14 @@ void Graphe::dessinerPareto()
   textprintf_ex(monbuffer1,font,1340+6,730+6,makecol(0,85,255),-1,"cout 1");
   textprintf_ex(monbuffer1,font,20-6,30-12,makecol(0,85,255),-1,"cout 2");
   blit(monbuffer1,screen,0,0,0,0,1400,750);
-  ///for(auto coor : frontiere)
-   // {
-    //circlefill(monbuffer1,20+coor[0],695-coor[1],makecol(0,255,0));
- // }
-}
+  for(auto coor : frontierePareto)
+   {
+    circlefill(monbuffer1,20+((max_coor*coor[1])/100)*10,730-(coor[2]*5),2,makecol(0,255,0));
+  }
+  for(auto coords : nuagePoints)
+    {
+    circlefill(monbuffer1,20+((max_coor*coords[1])/100)*10,730-(coords[2]*5),2,makecol(255,0,0));
+  }
+   blit(monbuffer1,screen,0,0,0,0,1400,750);
 
+}

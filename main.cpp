@@ -44,8 +44,8 @@ int main()
 
     Graphe graphe("manhattan.txt", "manhattan_weights_0.txt");
     graphe.algoPrim();
-    graphe.algoPareto();
-    //allegro();
+//    graphe.algoPareto();
+    allegro();
 
     /*
         std::cout << "Que voulez vous afficher ?"<<std::endl;
