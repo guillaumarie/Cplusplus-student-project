@@ -25,107 +25,106 @@ void affichage_menu (Graphe graphe) // fonction pour afficher le menu
     //blit(buffer_menu,screen,0,0,0,0,1400,750);
     int choix=0;
 
-
     while (!key[KEY_ESC]) //pour quitter, appuyer sur la touche echap
-    {
-        blit(menu_all_options,buffer_menu,0,0,0,0,1400,750);
-
-        if (mouse_x>68 && mouse_x<312 )  // devenir blanc quand on approche de la case 1 et choix=1 si clic
         {
-            if( mouse_y>82 && mouse_y<107)
-                blit(bouton1,buffer_menu,0,0,0,0,1400,750);
-            if (mouse_b & 1)
-            {
-                choix = 1;
-                break;
-            }
-        }
+            blit(menu_all_options,buffer_menu,0,0,0,0,1400,750);
 
-        if (mouse_x>96 && mouse_x<284) // devenir blanc quand on approche de la case 2 et choix=2 si clic
-        {
-            if (mouse_y>209 && mouse_y<266)
+           if (mouse_x>68 && mouse_x<312 )  // devenir blanc quand on approche de la case 1 et choix=1 si clic
             {
-                blit(bouton2,buffer_menu,0,0,0,0,1400,750);
-                if (mouse_b & 1)
+                if( mouse_y>82 && mouse_y<107)
                 {
-                    choix = 2;
-                    break;
+                   blit(bouton1,buffer_menu,0,0,0,0,1400,750);
+                    if (mouse_b & 1)
+                    {
+                        choix = 1;
+                        break;
+                    }
                 }
             }
-        }
 
-        if (mouse_x>95 && mouse_x<285) // devenir blanc quand on approche de la case 3 et choix=3 si clic
-        {
-            if (mouse_y>348 && mouse_y<497)
+                if (mouse_x>96 && mouse_x<284) // devenir blanc quand on approche de la case 2 et choix=2 si clic
             {
-                blit(bouton3,buffer_menu,0,0,0,0,1400,750);
-                if (mouse_b & 1)
+                if (mouse_y>209 && mouse_y<266)
                 {
-                    choix = 3;
-                    break;
+                    blit(bouton2,buffer_menu,0,0,0,0,1400,750);
+                    if (mouse_b & 1)
+                    {
+                        choix = 2;
+                        break;
+                    }
+                }
+             }
+
+             if (mouse_x>95 && mouse_x<285) // devenir clair quand on approche de la case 3 et choix=3 si clic
+            {
+                if (mouse_y>348 && mouse_y<397)
+                {
+                    blit(bouton3,buffer_menu,0,0,0,0,1400,750);
+                    if (mouse_b & 1)
+                    {
+                        choix = 3;
+                        break;
+                    }
                 }
             }
-        }
 
-        if (mouse_x>53 && mouse_x<329) // devenir blanc quand on approche de la case 4 et choix=4 si clic
-        {
-            if (mouse_y>468 && mouse_y<526)
+            if (mouse_x>53 && mouse_x<329) // devenir blanc quand on approche de la case 4 et choix=4 si clic
             {
-                blit(bouton4,buffer_menu,0,0,0,0,1400,750);
-                if (mouse_b & 1)
+                if (mouse_y>468 && mouse_y<526)
                 {
-                    choix = 4;
-                    break;
+                    blit(bouton4,buffer_menu,0,0,0,0,1400,750);
+                    if (mouse_b & 1)
+                    {
+                        choix = 4;
+                        break;
+                    }
                 }
             }
-        }
 
-        if (mouse_x>52 && mouse_x<330) // devenir blanc quand on approche de la case 5 et choix=5 si clic
-        {
-            if (mouse_y>614 && mouse_y<663)
+            if (mouse_x>52 && mouse_x<330) // devenir blanc quand on approche de la case 5 et choix=5 si clic
             {
-                blit(bouton5,buffer_menu,0,0,0,0,1400,750);
-                if (mouse_b & 1)
+                if (mouse_y>614 && mouse_y<663)
                 {
-                    choix = 5;
-                    break;
+                    blit(bouton5,buffer_menu,0,0,0,0,1400,750);
+                    if (mouse_b & 1)
+                    {
+                        choix = 5;
+                        break;
+                    }
                 }
             }
-        }
 
         blit(buffer_menu, screen,0,0,0,0,1400,750);
         clear_bitmap(buffer_menu);
 
-    }
-
-
-    switch(choix)
+        }
+ switch(choix)
     {
-    case 1 :
-        graphe.dessinerGraphe();
+        case 1 :
+                graphe.dessinerGraphe();
 
-        while (!key[KEY_SPACE]) {} // pour retourner au menu appuyer sur la barre d'espace
-        rest(100);
-        break;
+                while (!key[KEY_SPACE]){}  // pour retourner au menu appuyer sur la barre d'espace
+                rest(100);
+            break;
 
-    case 2 :
-        graphe.dessinerPrim1();
-        while (!key[KEY_SPACE]) {} // pour retourner au menu appuyer sur la barre d'espace
-        rest(100);
-        break;
+        case 2 :
+           graphe.dessinerPrim1();
+            while (!key[KEY_SPACE]){} // pour retourner au menu appuyer sur la barre d'espace
+                rest(100);
+            break;
 
-    case 3 :
-        graphe.dessinerPrim2();
-        while (!key[KEY_SPACE]) {} // pour retourner au menu appuyer sur la barre d'espace
-        rest(100);
-        break;
+        case 3 :
+            graphe.dessinerPrim2();
+            while (!key[KEY_SPACE]){} // pour retourner au menu appuyer sur la barre d'espace
+                rest(100);
+            break;
+      case 4 :
 
-    case 4 :
-        graphe.algoPareto();
-        graphe.dessinerPareto(graphe.getFrontier(),graphe.getNuage());
-        while (!key[KEY_SPACE]) {} // pour retourner au menu appuyer sur la barre d'espace
-        rest(100);
-        break;
+           graphe.algoPareto();
+           graphe.dessinerPareto(graphe.getFrontier(),graphe.getNuage());
+           while (!key[KEY_SPACE]){} // pour retourner au menu appuyer sur la barre d'espace
+                rest(100);
+           break;
 
     }
 }
