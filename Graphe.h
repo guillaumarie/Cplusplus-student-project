@@ -44,6 +44,7 @@ class Graphe
         std::vector<std::vector<float>> getFrontierDijkstra(){return m_frontiereParetoDijkstra;}
         std::vector<std::vector<float>> getNuageDijkstra(){return m_nuagePointsDijkstra;}
         void dessinerPareto(std:: vector<std::vector<float>> m_frontierePareto,std::vector<std::vector<float>> m_nuagePoints);
+        void dessinerParetoDijkstra (std::vector<std::vector<float>> frontierePareto_,std::vector<std::vector<float>>nuagePoints_);
         std::vector<Arete*> getm_Arete();
         ~Graphe();
 

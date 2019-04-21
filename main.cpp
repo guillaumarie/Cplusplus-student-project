@@ -48,15 +48,6 @@ int main()
     graphe.algoDijkstra();
     allegro();
 
-    /*
-        std::cout << "Que voulez vous afficher ?"<<std::endl;
-        std::cout<<"1-Afficher le graphe"<<std::endl;
-        std::cout<<"2-Affcher le premier arbre couvrantde poids minimum"<<std::endl;
-        std::cout<<"3-Afficher le deuxieme arbre couvant de poids minimum "<<std::endl;
-        std::cout<<"4-Afficher le graphe de Pareto "<<std::endl;
-        std::cin >> choix;
-    */
-
     std::clock_t c_end = std::clock();              // Fin horloge temps cpu
     auto t_end = std::chrono::high_resolution_clock::now();     // Fin horloge temps réel
     std::cout << "Total time taken by CPU: " << 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC << " ms" << std::endl;

@@ -724,11 +724,11 @@ void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
         int coord_y1 = vecteur_de_sommets[0]->getY();
         int coord_x2 = vecteur_de_sommets[1]->getX();
         int coord_y2 = vecteur_de_sommets[1]->getY();
-        line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(0,255,255));
+        line(monbuffer, coord_x1, coord_y1, coord_x2, coord_y2, makecol(174,255,0));
         vecteur_de_sommets.clear();
         for(const auto& it : m_sommets)
         {
-            circlefill(monbuffer, it->getX(), it->getY(),8,makecol(220,181,255));
+            circlefill(monbuffer, it->getX(), it->getY(),8,makecol(48,255,248));
             textprintf_ex(monbuffer,font,it->getX()+12,it->getY()-12,makecol(130,255,167),-1,"%d",it->getId());
         }
         if(itA==m_aretesPrim2.back())
@@ -794,15 +794,41 @@ void Graphe::dessinerPareto(std::vector<std::vector<float>> frontierePareto,std:
     textprintf_ex(monbuffer1,font,1340+6,730+6,makecol(0,85,255),-1,"cout 1");
     textprintf_ex(monbuffer1,font,20-6,30-12,makecol(0,85,255),-1,"cout 2");
     blit(monbuffer1,screen,0,0,0,0,1400,750);
-    for(auto coor : frontierePareto)
-    {
-        circlefill(monbuffer1,20+((max_coor*coor[1])/100)*10,730-(coor[2]*5),2,makecol(0,255,0));
-    }
     for(auto coords : nuagePoints)
     {
         circlefill(monbuffer1,20+((max_coor*coords[1])/100)*10,730-(coords[2]*5),2,makecol(255,0,0));
+    }
+    for(auto coor : frontierePareto)
+    {
+        circlefill(monbuffer1,20+((max_coor*coor[1])/100)*10,730-(coor[2]*5),3,makecol(0,255,0));
     }
     blit(monbuffer1,screen,0,0,0,0,1400,750);
 
 }
 
+void Graphe::dessinerParetoDijkstra (std::vector<std::vector<float>> frontierePareto_,std::vector<std::vector<float>>nuagePoints_)
+{
+    std::vector<float> tmp;
+    for(auto coor : frontierePareto_)
+        tmp.push_back(coor[1]);
+    float max_coor = (*std::max_element(tmp.begin(),tmp.end()));
+    BITMAP* monbuffer1 = create_bitmap(1400,750);
+    rectfill(monbuffer1, 0, 0, 1400,750, makecol(255,255,255));
+    circlefill(monbuffer1,20,730,1,makecol(140,0,255));
+    rectfill(monbuffer1, 20, 730, 1340,734, makecol(140,0,255)); // Utilisation de rectfill pour pouvoir faire des axes épais
+    rectfill(monbuffer1, 20, 730,24,30, makecol(140,0,255));
+    textprintf_ex(monbuffer1,font,1340+6,730+6,makecol(0,85,255),-1,"cout");
+    textprintf_ex(monbuffer1,font,20-6,30-12,makecol(0,85,255),-1,"duree");
+    blit(monbuffer1,screen,0,0,0,0,1400,750);
+    for(auto coords : nuagePoints_)
+    {
+        circlefill(monbuffer1,20+((max_coor*coords[1]/100)*10),730-((coords[2]*5)/20),2,makecol(255,0,0));
+    }
+    for(auto coor : frontierePareto_)
+    {
+       circlefill(monbuffer1,20+((max_coor*coor[1]/100)*10),730-((coor[2]*5)/20),3 ,makecol(0,255,0));
+    }
+
+    blit(monbuffer1,screen,0,0,0,0,1400,750);
+
+}

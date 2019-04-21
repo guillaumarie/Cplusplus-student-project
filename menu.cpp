@@ -125,6 +125,12 @@ void affichage_menu (Graphe graphe) // fonction pour afficher le menu
            while (!key[KEY_SPACE]){} // pour retourner au menu appuyer sur la barre d'espace
                 rest(100);
            break;
+      case 5 :
+          graphe.algoPareto();
+          graphe.dessinerParetoDijkstra(graphe.getFrontierDijkstra(), graphe.getNuageDijkstra());
+           while (!key[KEY_SPACE]){} // pour retourner au menu appuyer sur la barre d'espace
+                rest(100);
+           break;
 
     }
 }
