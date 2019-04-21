@@ -701,20 +701,29 @@ void Graphe::dessinerPrim2() // pour dessinerl'arbre couvrant de poids 1 minimum
     }
 
 }
-///std::vector<std::vector<float>> frontiere,std::vector<std::vector<float>> combiPareto
-void Graphe::dessinerPareto()
+void Graphe::dessinerPareto(std::vector<std::vector<float>> frontierePareto,std::vector<std::vector<float>>nuagePoints)
 {
+    std::vector<float> tmp;
+    for(auto coor : frontierePareto)
+        tmp.push_back(coor[1]);
+    float max_coor = (*std::max_element(tmp.begin(),tmp.end()));
     BITMAP* monbuffer1 = create_bitmap(1400,750);
     rectfill(monbuffer1, 0, 0, 1400,750, makecol(255,255,255));
-    circlefill(monbuffer1,20,730,1,makecol(140,0,255));
-    rectfill(monbuffer1, 20, 730, 1340,734, makecol(140,0,255)); // Utilisation de rectfill pour pouvoir faire des axes épais
-    rectfill(monbuffer1, 20, 730,24,30, makecol(140,0,255));
-    textprintf_ex(monbuffer1,font,1340+6,730+6,makecol(0,85,255),-1,"cout 1");
-    textprintf_ex(monbuffer1,font,20-6,30-12,makecol(0,85,255),-1,"cout 2");
-    blit(monbuffer1,screen,0,0,0,0,1400,750);
-    ///for(auto coor : frontiere)
-    // {
-    //circlefill(monbuffer1,20+coor[0],695-coor[1],makecol(0,255,0));
-// }
+ circlefill(monbuffer1,20,730,1,makecol(140,0,255));
+ rectfill(monbuffer1, 20, 730, 1340,734, makecol(140,0,255)); // Utilisation de rectfill pour pouvoir faire des axes épais
+ rectfill(monbuffer1, 20, 730,24,30, makecol(140,0,255));
+  textprintf_ex(monbuffer1,font,1340+6,730+6,makecol(0,85,255),-1,"cout 1");
+  textprintf_ex(monbuffer1,font,20-6,30-12,makecol(0,85,255),-1,"cout 2");
+  blit(monbuffer1,screen,0,0,0,0,1400,750);
+  for(auto coor : frontierePareto)
+   {
+    circlefill(monbuffer1,20+((max_coor*coor[1])/100)*10,730-(coor[2]*5),2,makecol(0,255,0));
+  }
+  for(auto coords : nuagePoints)
+    {
+    circlefill(monbuffer1,20+((max_coor*coords[1])/100)*10,730-(coords[2]*5),2,makecol(255,0,0));
+  }
+   blit(monbuffer1,screen,0,0,0,0,1400,750);
+
 }
 
