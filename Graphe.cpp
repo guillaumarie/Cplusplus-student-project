@@ -425,7 +425,7 @@ void Graphe::algoPareto()
 
 void Graphe::algoDijkstra()
 {
-    int idGraphe=0, numeroPossibilite=0, reste=0, nombreAretes=0, id1=0, id2=0, cc, nombre=pow(2,m_aretes.size());
+    int idGraphe=0, numeroPossibilite=0, reste=0, id1=0, id2=0, cc, nombre=pow(2,m_aretes.size());
     float xMin, yActuel;
     std::vector<int> nombreBinaire;
     std::vector<std::pair<float,float>> triPoids1;
@@ -544,9 +544,9 @@ void Graphe::algoDijkstra()
                     for (int s=0; s<m_ordre; ++s)
                     {
                         if (!sommetDecouvertMin[s] && adjacence[indice][s] && distance[indice] != 1000000 && distance[indice]+adjacence[indice][s] < distance[s])
-                        // Si le sommet s n'est pas minimal découvert, et s'il y a adjacence entre le sommet s et le sommet dont la distance avec le sommet de départ est minimale
-                        // Et si la distance entre ce sommet et le sommet de départ n'est pas de 1 000 000 (valeur d'initialisation)
-                        // Et si cette distance + la distance entre le sommet indice et le sommet s est inférieure à la distance entre le sommet de départ et le sommet s
+                            // Si le sommet s n'est pas minimal découvert, et s'il y a adjacence entre le sommet s et le sommet dont la distance avec le sommet de départ est minimale
+                            // Et si la distance entre ce sommet et le sommet de départ n'est pas de 1 000 000 (valeur d'initialisation)
+                            // Et si cette distance + la distance entre le sommet indice et le sommet s est inférieure à la distance entre le sommet de départ et le sommet s
                         {
                             distance[s] = distance[indice] + adjacence[indice][s];      // Alors la distance entre le sommet s et le sommet initial est actualisée
                         }
@@ -691,6 +691,9 @@ void Graphe::dessinerGraphe() //Dessiner les graphes
 
     }
 }
+
+
+
 void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
 {
     //float poids2Tot = 0;
@@ -733,6 +736,8 @@ void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
         blit(monbuffer,screen,0,0,0,0,1400,750);
     }
 }
+
+
 void Graphe::dessinerPrim2() // pour dessinerl'arbre couvrant de poids 1 minimum
 {
     //float poids2Tot = 0;
@@ -783,21 +788,21 @@ void Graphe::dessinerPareto(std::vector<std::vector<float>> frontierePareto,std:
     float max_coor = (*std::max_element(tmp.begin(),tmp.end()));
     BITMAP* monbuffer1 = create_bitmap(1400,750);
     rectfill(monbuffer1, 0, 0, 1400,750, makecol(255,255,255));
- circlefill(monbuffer1,20,730,1,makecol(140,0,255));
- rectfill(monbuffer1, 20, 730, 1340,734, makecol(140,0,255)); // Utilisation de rectfill pour pouvoir faire des axes épais
- rectfill(monbuffer1, 20, 730,24,30, makecol(140,0,255));
-  textprintf_ex(monbuffer1,font,1340+6,730+6,makecol(0,85,255),-1,"cout 1");
-  textprintf_ex(monbuffer1,font,20-6,30-12,makecol(0,85,255),-1,"cout 2");
-  blit(monbuffer1,screen,0,0,0,0,1400,750);
-  for(auto coor : frontierePareto)
-   {
-    circlefill(monbuffer1,20+((max_coor*coor[1])/100)*10,730-(coor[2]*5),2,makecol(0,255,0));
-  }
-  for(auto coords : nuagePoints)
+    circlefill(monbuffer1,20,730,1,makecol(140,0,255));
+    rectfill(monbuffer1, 20, 730, 1340,734, makecol(140,0,255)); // Utilisation de rectfill pour pouvoir faire des axes épais
+    rectfill(monbuffer1, 20, 730,24,30, makecol(140,0,255));
+    textprintf_ex(monbuffer1,font,1340+6,730+6,makecol(0,85,255),-1,"cout 1");
+    textprintf_ex(monbuffer1,font,20-6,30-12,makecol(0,85,255),-1,"cout 2");
+    blit(monbuffer1,screen,0,0,0,0,1400,750);
+    for(auto coor : frontierePareto)
     {
-    circlefill(monbuffer1,20+((max_coor*coords[1])/100)*10,730-(coords[2]*5),2,makecol(255,0,0));
-  }
-   blit(monbuffer1,screen,0,0,0,0,1400,750);
+        circlefill(monbuffer1,20+((max_coor*coor[1])/100)*10,730-(coor[2]*5),2,makecol(0,255,0));
+    }
+    for(auto coords : nuagePoints)
+    {
+        circlefill(monbuffer1,20+((max_coor*coords[1])/100)*10,730-(coords[2]*5),2,makecol(255,0,0));
+    }
+    blit(monbuffer1,screen,0,0,0,0,1400,750);
 
 }
 
