@@ -18,8 +18,6 @@ void Sommet::ajouterVoisin(const Sommet* voisin){
 
 ///----------------------------------------------------------------------------
 
-/// Méthode rechercherCC inspiré du TP2 (réalisé avec Martin Puyou-Lascassies)
-
 int Sommet::verifierCC() const
 {
     std::unordered_set<const Sommet*> decouvert;

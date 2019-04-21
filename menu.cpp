@@ -1,7 +1,6 @@
 #include "menu.h"
 #include <allegro.h>
 #include <iostream>
-#include "Graphe.h"
 #include "Sommet.h"
 #include "Arete.h"
 #include <vector>
