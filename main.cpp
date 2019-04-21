@@ -67,6 +67,7 @@ int main()
         affichage_menu(graphe);
 
 
+
     return 0;
 }
 END_OF_MAIN();

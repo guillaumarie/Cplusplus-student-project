@@ -39,7 +39,9 @@ class Graphe
         void dessinerGraphe();
         void dessinerPrim1();
         void dessinerPrim2();
-        void dessinerPareto();
+        std::vector<std::vector<float>> getFrontier(){return m_frontierePareto;}
+        std::vector<std::vector<float>> getNuage(){return m_nuagePoints;}
+        void dessinerPareto(std:: vector<std::vector<float>> m_frontierePareto,std::vector<std::vector<float>> m_nuagePoints);
         std::vector<Arete*> getm_Arete();
         ~Graphe();
 
