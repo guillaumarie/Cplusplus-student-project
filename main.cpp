@@ -42,7 +42,7 @@ int main()
     auto t_start = std::chrono::high_resolution_clock::now();       // Début horloge temps réel
 
 
-    Graphe graphe("triville.txt", "triville_weights_0.txt");
+    Graphe graphe("broadway.txt", "broadway_weights_0.txt");
     graphe.algoPrim();
     graphe.algoPareto();
     graphe.algoDijkstra();

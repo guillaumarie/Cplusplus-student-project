@@ -822,11 +822,11 @@ void Graphe::dessinerParetoDijkstra (std::vector<std::vector<float>> frontierePa
     blit(monbuffer1,screen,0,0,0,0,1400,750);
     for(auto coords : nuagePoints_)
     {
-        circlefill(monbuffer1,20+((max_coor*coords[1]/100)*10),730-((coords[2]*5)/20),2,makecol(255,0,0));
+        circlefill(monbuffer1,20+((max_coor*coords[1]/150)*10),730-((coords[2]*4)/60),2,makecol(255,0,0));
     }
     for(auto coor : frontierePareto_)
     {
-       circlefill(monbuffer1,20+((max_coor*coor[1]/100)*10),730-((coor[2]*5)/20),3 ,makecol(0,255,0));
+       circlefill(monbuffer1,20+((max_coor*coor[1]/150)*10),730-((coor[2]*4)/60),3 ,makecol(0,255,0));
     }
 
     blit(monbuffer1,screen,0,0,0,0,1400,750);
