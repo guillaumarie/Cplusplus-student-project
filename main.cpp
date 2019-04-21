@@ -62,10 +62,10 @@ int main()
     std::cout << "Total time taken by CPU: " << 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC << " ms" << std::endl;
     std::cout << "Total real time: " << std::chrono::duration<double, std::milli>(t_end-t_start).count() << " ms" << std::endl;
 
-/*
+    /*
     while(!key[KEY_ESC])
         affichage_menu(graphe);
-*/
+    */
 
     return 0;
 }

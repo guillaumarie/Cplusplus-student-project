@@ -274,6 +274,7 @@ void Graphe::algoPareto()
         {
             for(auto n:nombreBinaire)        // Parcours de tous les éléments (0 ou 1) du nombre binaire
             {
+                std::cout<<n;
                 if(n == 1)      // Si l'élément du nombre binaire est égal à 1
                 {
                     idSelectionnes.push_back(compte);
@@ -420,9 +421,8 @@ void Graphe::algoPareto()
 
 void Graphe::algoDijkstra()
 {
-    int numeroPossibilite=0, reste=0, nombreAretes=0, compte=0, id1, id2, cc, nombre=pow(2,m_aretes.size());
+    int numeroPossibilite=0, reste=0, nombreAretes=0, compte=0, id1=0, id2=0, cc, nombre=pow(2,m_aretes.size());
     std::vector<int> nombreBinaire;
-    //std::vector<int> idSelectionnes;
     std::vector<std::pair<float,float>> triPoids1;
     std::vector<std::pair<float,float>> triPoids2Temp;
     std::vector<std::pair<float,float>> triPoids2;
@@ -430,147 +430,123 @@ void Graphe::algoDijkstra()
     std::vector<float> pointNuage;
 
 
-    for(int i=0; i<nombre; ++i )        // Parcours des possibilités
+    //for(int i=0; i<nombre; ++i)        // Parcours des possibilités
+    //{
+    numeroPossibilite=14;                // Solution possible traitée en ce moment
+    compte=0, cc=0;
+
+    /// Conversion de numeroPossibilte en binaire
+    // On commence par créer une liste en binaire, chaque indice correspondant à une arête
+    do
     {
-        numeroPossibilite=i;                // Solution possible traitée en ce moment
-        compte=0, cc=0;
+        reste=numeroPossibilite%2;             // On calcule son reste dans la division euclidienne par 2
+        nombreBinaire.push_back(reste);         // On ajoute le reste (0 ou 1) au vecteur nombreBinaire
+        numeroPossibilite = numeroPossibilite/2;           // Et on garde le quotient de la division
+    }
+    while(numeroPossibilite >= 2);                // Tant que le nombre est supérieur à 2
+    nombreBinaire.push_back(numeroPossibilite);     // On ajoute le dernier quotient (0 ou 1) au vecteur nombreBinaire
 
-        /// Conversion de numeroPossibilte en binaire
-        // On commence par créer une liste en binaire, chaque indice correspondant à une arête
-        do
+
+    /// On répertorie tous les voisins
+    /// Puis on s'assure que tous les sommets sont bien dans la même composante connexe
+    /// Si oui, on ajoute toutes les arêtes de la possibilité étudiée à un vecteur d'arêtes
+    for(auto v:m_sommets)
+        v->setVoisins();
+
+    std::vector<int> idSommetsGraphe;
+    for(int j=0; j<nombreBinaire.size(); ++j)        // Parcours de tous les éléments (0 ou 1) du nombre binaire
+    {
+        if(nombreBinaire[j]==1)      // Si l'élément du nombre binaire est égal à 1
         {
-            reste=numeroPossibilite%2;             // On calcule son reste dans la division euclidienne par 2
-            nombreBinaire.push_back(reste);         // On ajoute le reste (0 ou 1) au vecteur nombreBinaire
-            numeroPossibilite = numeroPossibilite/2;           // Et on garde le quotient de la division
+            id1 = m_aretes[j]->getId1();
+            id2 = m_aretes[j]->getId2();
+            m_sommets[id1]->ajouterVoisin(m_sommets[id2]);          // On ajoute le sommet id2 aux voisins de id1
+            m_sommets[id2]->ajouterVoisin(m_sommets[id1]);          // On ajoute le sommet id2 aux voisins de id1
         }
-        while(numeroPossibilite >= 2);                // Tant que le nombre est supérieur à 2
-        nombreBinaire.push_back(numeroPossibilite);     // On ajoute le dernier quotient (0 ou 1) au vecteur nombreBinaire
+    }
+    nombreBinaire.clear();
+    cc = m_sommets[id1]->verifierCC();        // Recherche des composantes connexes à partir du sommet id1 (n'importe quel sommet)
 
-        /*
-        for(auto n:nombreBinaire)
-            std::cout<<n;
-        */
 
-        /// Calcul du nombre d'arêtes
-        nombreAretes = 0;
-        for(auto n:nombreBinaire)        // Parcours des 0 et 1 du vecteur nombreBinaire (pour étudier les arêtes sélectionnées)
+    if(cc == m_ordre)
+    {
+        int poids2Arete, idVoisin;
+        float adjacence[m_ordre][m_ordre];
+
+        for (int j=0; j<m_ordre; ++j)               // Tableau d'adjacence initialisé
         {
-            if(n == 1)        // Si l'élément est égal à 1
-                ++nombreAretes;            // On incrémente le nombre de 1 dans le nombre binaire (donc le nombre d'arêtes sélectionnées)
+            for (int k=0; k<m_ordre; ++k)
+                adjacence[j][k] = 0;
         }
 
-
-        /// Si nombreAretes = m_ordre-1, on récupère les identifiants des arêtes sélectionnées
-        /// Puis on répertorie tous les voisins
-        /// Puis on s'assure que tous les sommets sont bien dans la même composante connexe
-        /// Si oui, on ajoute toutes les arêtes de la possibilité étudiée à un vecteur d'arêtes
-        for(auto v:m_sommets)
-            v->setVoisins();
-
-        std::vector<int> idSommetsGraphe;
-        for(auto n:nombreBinaire)        // Parcours de tous les éléments (0 ou 1) du nombre binaire
+        for(int idSommet=0; idSommet<m_ordre; ++idSommet)            // Remplissage du tableau d'adjacence pour le graphe étudié
         {
-            std::cout<<n;
-            if(n == 1)      // Si l'élément du nombre binaire est égal à 1
+            std::vector<const Sommet*> voisinsTemp;
+            voisinsTemp = m_sommets[idSommet]->getVoisins();
+            for(auto v:voisinsTemp)
             {
-                std::cout<<"ok"<<n<<std::endl;
-                //idSelectionnes.push_back(compte);
-                id1 = m_aretes[compte]->getId1();
-                id2 = m_aretes[compte]->getId2();
-                m_sommets[id1]->ajouterVoisin(m_sommets[id2]);          // On ajoute le sommet id2 aux voisins de id1
-                m_sommets[id2]->ajouterVoisin(m_sommets[id1]);          // On ajoute le sommet id2 aux voisins de id1
-                int both=0, just=0, other=0;
-                for(auto id:idSommetsGraphe)
+                idVoisin = v->getId();
+                for(auto a:m_aretes)
                 {
-                    std::cout<<"oui"<<std::endl;
-                    if(id!=id1 && id!=id2)
-                        ++both;
-                    else if(id!=id1 && id==id2)
-                        ++just;
-                    else if(id==id1 && id!=id2)
-                        ++other;
+                    if((a->getId1()==idSommet && a->getId2()==idVoisin) || (a->getId1()==idVoisin && a->getId2()==idSommet))
+                    {
+                        poids2Arete=a->getPoids2();
+                        std::cout<<idSommet<<" et "<<idVoisin<<" sont distants de "<<poids2Arete<<std::endl;
+                        break;
+                    }
                 }
-                if(idSommetsGraphe.size()+1==both)
-                {
-                    idSommetsGraphe.push_back(id1);
-                    idSommetsGraphe.push_back(id2);
-                }
-                if(just==1)
-                    idSommetsGraphe.push_back(id1);
-                if(other==1)
-                    idSommetsGraphe.push_back(id2);
+                adjacence[idSommet][idVoisin]=poids2Arete;
             }
-            ++compte;
+            voisinsTemp.clear();
         }
-        nombreBinaire.clear();
-        cc = m_sommets[id1]->verifierCC();        // Recherche des composantes connexes à partir du sommet id1 (n'importe quel sommet)
 
 
-        if(cc == m_ordre)
+        for(int f=0; f<m_ordre; ++f)
         {
-            int idArete, idVoisin;
-            int connexite[m_ordre][m_ordre];
-            for (int j=0; j<m_ordre; ++j)
+            int distance[m_ordre];
+            bool sommetDecouvertMin[m_ordre];
+
+            for (int j=0; j<m_ordre; ++j)           // Pour chaque sommet
             {
+                distance[j] = 1000000;             // Initialisation de la distance au sommet à une valeur très grande (ici, 1 000 000)
+                sommetDecouvertMin[j] = false;         // Et sommet non découvert
+            }
+            distance[f] = 0;                   // Sommet id à distance 0 de sommet id
+
+            for (int j=0; j<m_ordre-1; ++j)     // Parcours des m_ordre sommets
+            {
+                int distanceMin = 1000000, indice;      // Distance minimale initialisée à 1 000 000, tout comme la distance initiale au sommet traité de chaque sommet
+
                 for (int k=0; k<m_ordre; ++k)
-                    connexite[j][k] = 0;
+                {
+                    if (sommetDecouvertMin[k] == false && distance[k] <= distanceMin)       // Si le sommet k n'est pas à une distance minimale du sommet f et si la distance f->k est inférieure ou égale à la distance minimale
+                    {
+                        distanceMin = distance[k];
+                        std::cout<<k<<" a une distanceMin "<<distanceMin<<std::endl;
+                        indice = k;
+                    }
+                }
+                sommetDecouvertMin[indice] = true;
+
+                for (int k=0; k<m_ordre; ++k)
+                {
+                    if (!sommetDecouvertMin[k] && adjacence[indice][k] && distance[indice] != 1000000 && distance[indice]+adjacence[indice][k] < distance[k])
+                    {
+                        distance[k] = distance[indice] + adjacence[indice][k];
+                        std::cout<<k<<std::endl;
+                    }
+                }
             }
-            for(auto s:idSommetsGraphe)
+
+            for (int j=0; j < m_ordre; ++j)
             {
-                std::vector<const Sommet*> voisinsTemp;
-                voisinsTemp = m_sommets[s]->getVoisins();
-                for(auto v:voisinsTemp)
-                {
-                    idVoisin = v->getId();
-                    for(auto a:m_aretes)
-                    {
-                        if((a->getId1()==s && a->getId2()==idVoisin) || (a->getId1()==idVoisin && a->getId2()==s))
-                        {
-                            idArete=a->getIdArete();
-                            break;
-                        }
-                    }
-                    connexite[s][idVoisin]=idArete;
-                }
-                voisinsTemp.clear();
+                //if(j!=f)
+                std::cout<<"Sommet "<<j<<" distant de "<<distance[j]<<" par rapport au sommet "<<f<<std::endl;
             }
+            std::cout<<std::endl;
 
-            for(auto id:idSommetsGraphe)
-            {
-                int distance[m_ordre];
-                bool sommetDecouvert[m_ordre];
-
-                for (int j=0; j<m_ordre; ++j)
-                {
-                    distance[j] = 1000;
-                    sommetDecouvert[j] = false;
-                }
-                distance[id] = 0;
-                for (int j=0; j<m_ordre-1; ++j)
-                {
-                    int distanceMin = 1000, indice;
-
-                    for (int k=0; k<m_ordre; ++k)
-                    {
-                        if (sommetDecouvert[k] == false && distance[k] <= distanceMin)
-                        {
-                            distanceMin = distance[k];
-                            indice = k;
-                        }
-                    }
-                    sommetDecouvert[indice] = true;
-
-                    for (int k=0; k<m_ordre; ++k)
-                    {
-                        if (!sommetDecouvert[k] && connexite[indice][k] && distance[indice] != 1000 && distance[indice]+connexite[indice][k] < distance[k])
-                            distance[k] = distance[indice] + connexite[indice][k];
-                    }
-                }
-
-                for (int j=0; j < m_ordre; ++j)
-                    std::cout<<"Sommet "<<j<<" distant de "<<distance[j]<<" par rapport à la source"<<std::endl;
-            }
         }
+        //}
     }
 }
 
@@ -626,7 +602,7 @@ void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
 
     for(const auto& itA : m_aretesPrim1)
     {
-        std::cout <<"test";
+        //std::cout <<"test";
         int id_1;
         id_1=  itA->getId1();
         int id_2;
