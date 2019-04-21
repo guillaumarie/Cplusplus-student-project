@@ -2,7 +2,10 @@
 #include "menu.h"
 #include <math.h>
 
-/// CONSTRUCTEUR + RECUPERATION DONNEES FICHIER ____________________________
+
+
+/// ------------------------------- CONSTRUCTEUR + RECUPERATION DONNEES FICHIER ---------------------------------
+///         --> Inspiré des TPs précédents et adapté au sujet
 
 Graphe::Graphe(std::string nomFichierCoord, std::string nomFichierPoids)
 {
@@ -82,10 +85,16 @@ Graphe::Graphe(std::string nomFichierCoord, std::string nomFichierPoids)
 }
 
 
-/// _________________________________________________________________
-///ALGO DE PRIM
 
-/** à un moment faire un test if arbre.m_sommets.size() == ordre du graphe de base -> alors c'est bien un arbre COUVRANT**/
+
+
+
+
+
+
+
+/// ----------------------------------------- ALGO DE PRIM --------------------------------------------
+///        Cet algorithme est inspiré des résultats obtenus au TP6 avec Martin Puyou-Lascassies
 
 
 
@@ -126,7 +135,6 @@ void Graphe::algoPrim()
             }
         }
 
-        // à ce niveau, meilleureArete est l'arete de poids min
         id1 = meilleureArete->getId1();
         id2 = meilleureArete->getId2();
 
@@ -217,6 +225,14 @@ std::vector<Arete*> Graphe::getm_Arete()
 {
     return m_aretes;
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -394,6 +410,14 @@ void Graphe::algoPareto()
         ++rang;
     }
 }
+
+
+
+
+
+
+
+
 
 
 
