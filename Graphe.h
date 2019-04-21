@@ -21,8 +21,8 @@ class Graphe
         std::vector<Arete*> m_aretesPrim2;
         std::vector<std::vector<float>> m_frontierePareto;
         std::vector<std::vector<float>> m_nuagePoints;
-        std::vector<std::vector<float>> m_frontiereParetoDijsktra;
-        std::vector<std::vector<float>> m_nuagePointsDijsktra;
+        std::vector<std::vector<float>> m_frontiereParetoDijkstra;
+        std::vector<std::vector<float>> m_nuagePointsDijkstra;
         int m_ordre;
         float m_poids1Tot1;           // Total du poids 1 pour Prim poids 1
         float m_poids2Tot1;           // Total du poids 2 pour Prim poids 1

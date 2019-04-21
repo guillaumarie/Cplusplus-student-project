@@ -42,11 +42,11 @@ int main()
     auto t_start = std::chrono::high_resolution_clock::now();       // Début horloge temps réel
 
 
-    Graphe graphe("broadway.txt", "broadway_weights_0.txt");
+    Graphe graphe("triville.txt", "triville_weights_0.txt");
     graphe.algoPrim();
-    //graphe.algoPareto();
+    graphe.algoPareto();
     graphe.algoDijkstra();
-    //allegro();
+    allegro();
 
     /*
         std::cout << "Que voulez vous afficher ?"<<std::endl;
@@ -62,10 +62,10 @@ int main()
     std::cout << "Total time taken by CPU: " << 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC << " ms" << std::endl;
     std::cout << "Total real time: " << std::chrono::duration<double, std::milli>(t_end-t_start).count() << " ms" << std::endl;
 
-    /*
+
     while(!key[KEY_ESC])
         affichage_menu(graphe);
-    */
+
 
     return 0;
 }

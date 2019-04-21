@@ -238,7 +238,6 @@ void Graphe::algoPareto()
     std::vector<std::pair<float,float>> triPoids2;
     std::vector<float> pointPareto;
     std::vector<float> pointNuage;
-    //int cmpt=0;
 
 
     for(int i=0; i<nombre; ++i )        // Parcours des possibilités
@@ -274,7 +273,6 @@ void Graphe::algoPareto()
         {
             for(auto n:nombreBinaire)        // Parcours de tous les éléments (0 ou 1) du nombre binaire
             {
-                std::cout<<n;
                 if(n == 1)      // Si l'élément du nombre binaire est égal à 1
                 {
                     idSelectionnes.push_back(compte);
@@ -306,7 +304,6 @@ void Graphe::algoPareto()
                     poids1Tot = poids1Tot + poids1;       // On additionne le poids 1 au poids 1 total
                     poids2Tot = poids2Tot + poids2;       // On additionne le poids 2 au poids 2 total
                 }
-                //++cmpt;
 
                 std::pair <float,float> pair1 = std::make_pair (idGraphe, poids1Tot);
                 std::pair <float,float> pair2 = std::make_pair (idGraphe, poids2Tot);
@@ -318,7 +315,6 @@ void Graphe::algoPareto()
         nombreBinaire.clear();                  // On vide le nombre binaire de ses éléments
         ++idGraphe;
     }
-    //std::cout<<cmpt<<std::endl;
 
 
     std::sort(triPoids1.begin(), triPoids1.end(), comp);        // Tri des poids1 par ordre croissant
@@ -397,22 +393,6 @@ void Graphe::algoPareto()
         }
         ++rang;
     }
-
-    /*
-    std::cout<<"Frontiere Pareto"<<std::endl;
-    for(int i=0; i<m_frontierePareto.size(); ++i)
-    {
-        std::cout<<"idGraphe : "<<m_frontierePareto[i][0]<<"  poidsTot1 : "<<m_frontierePareto[i][1]<<"  poidstot2 : "<<m_frontierePareto[i][2]<<std::endl;
-    }
-    */
-
-    /*
-        std::cout<<std::endl<<"Nuage"<<std::endl;
-        for(int i=0; i<m_nuagePoints.size(); ++i)
-        {
-            std::cout<<"idGraphe : "<<m_nuagePoints[i][0]<<"  poidsTot1 : "<<m_nuagePoints[i][1]<<"  poidstot2 : "<<m_nuagePoints[i][2]<<std::endl;
-        }
-    */
 }
 
 
@@ -421,7 +401,7 @@ void Graphe::algoPareto()
 
 void Graphe::algoDijkstra()
 {
-    int idGraphe=0, numeroPossibilite=0, reste=0, nombreAretes=0, compte=0, id1=0, id2=0, cc, nombre=pow(2,m_aretes.size());
+    int idGraphe=0, numeroPossibilite=0, reste=0, nombreAretes=0, id1=0, id2=0, cc, nombre=pow(2,m_aretes.size());
     float xMin, yActuel;
     std::vector<int> nombreBinaire;
     std::vector<std::pair<float,float>> triPoids1;
@@ -433,10 +413,10 @@ void Graphe::algoDijkstra()
 
     for(int i=0; i<nombre; ++i)        // Parcours des possibilités
     {
-        float poids1Tot=0;
-        float poids2Tot=0;
+        float coutTot=0;
+        float distanceTot=0;
         numeroPossibilite=i;                // Solution possible traitée en ce moment
-        compte=0, cc=0;
+        cc=0;
 
         /// Conversion de numeroPossibilte en binaire
         // On commence par créer une liste en binaire, chaque indice correspondant à une arête
@@ -489,15 +469,13 @@ void Graphe::algoDijkstra()
                 for(auto v:voisinsTemp)
                 {
                     idVoisin = v->getId();
-                    //std::cout<<idVoisin<<std::endl;
                     for(auto a:m_aretes)
                     {
                         if((a->getId1()==idSommet && a->getId2()==idVoisin) || (a->getId1()==idVoisin && a->getId2()==idSommet))
                         {
                             poids1Arete=a->getPoids1();
-                            poids1Tot=poids1Tot+poids1Arete;
+                            coutTot=coutTot+poids1Arete;
                             poids2Arete=a->getPoids2();
-                            //std::cout<<idSommet<<" et "<<idVoisin<<" sont distants de "<<poids2Arete<<std::endl;
                             break;
                         }
                     }
@@ -507,19 +485,25 @@ void Graphe::algoDijkstra()
             }
 
 
-            for(int f=0; f<m_ordre; ++f)
+/// --------------------------------------- CODE CI-DESSOUS INSPIRé DU SITE -----------------------------------------
+///                 https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/
+///
+/// Cet algorithme était proposé pour un Dijkstra à partir d'un sommet, mais nous avons dû l'écrire pour plusieurs sommets et l'adapter à nos données
+
+
+            for(int f=0; f<m_ordre; ++f)            // Parcours de tous les sommets (pour trouver leur distance au sommet de départ)
             {
-                float distance[m_ordre];
-                bool sommetDecouvertMin[m_ordre];
+                float distance[m_ordre];                // Tableau des distances entre sommet de départ et chaqeu sommet parcouru
+                bool sommetDecouvertMin[m_ordre];       // Tableau des sommets découverts et de distance minimale avec le sommet de départ
 
                 for (int j=0; j<m_ordre; ++j)           // Pour chaque sommet
                 {
-                    distance[j] = 1000000;             // Initialisation de la distance au sommet à une valeur très grande (ici, 1 000 000)
+                    distance[j] = 1000000;             // Initialisation de la distance au sommet à une valeur très grande (ici, 1 000 000 car on sait qu'aucune arête ne fait ce poids)
                     sommetDecouvertMin[j] = false;         // Et sommet non découvert
                 }
                 distance[f] = 0;                   // Sommet id à distance 0 de sommet id
 
-                for (int j=0; j<m_ordre-1; ++j)     // Parcours des m_ordre sommets
+                for (int j=0; j<m_ordre-1; ++j)     // Parcours des m_ordre sommets-1 (la distance de sommet d'origine à sommet d'origine étant nulle)
                 {
                     int distanceMin = 1000000, indice;      // Distance minimale initialisée à 1 000 000, tout comme la distance initiale au sommet traité de chaque sommet
 
@@ -528,35 +512,32 @@ void Graphe::algoDijkstra()
                         if (sommetDecouvertMin[k] == false && distance[k] <= distanceMin)       // Si le sommet k n'est pas à une distance minimale du sommet f et si la distance f->k est inférieure ou égale à la distance minimale
                         {
                             distanceMin = distance[k];
-                            //std::cout<<k<<" a une distanceMin "<<distanceMin<<std::endl;
                             indice = k;
                         }
                     }
                     sommetDecouvertMin[indice] = true;
 
-                    for (int k=0; k<m_ordre; ++k)
+                    for (int s=0; s<m_ordre; ++s)
                     {
-                        if (!sommetDecouvertMin[k] && adjacence[indice][k] && distance[indice] != 1000000 && distance[indice]+adjacence[indice][k] < distance[k])
+                        if (!sommetDecouvertMin[s] && adjacence[indice][s] && distance[indice] != 1000000 && distance[indice]+adjacence[indice][s] < distance[s])
+                        // Si le sommet s n'est pas minimal découvert, et s'il y a adjacence entre le sommet s et le sommet dont la distance avec le sommet de départ est minimale
+                        // Et si la distance entre ce sommet et le sommet de départ n'est pas de 1 000 000 (valeur d'initialisation)
+                        // Et si cette distance + la distance entre le sommet indice et le sommet s est inférieure à la distance entre le sommet de départ et le sommet s
                         {
-                            distance[k] = distance[indice] + adjacence[indice][k];
-                            //std::cout<<k<<std::endl;
+                            distance[s] = distance[indice] + adjacence[indice][s];      // Alors la distance entre le sommet s et le sommet initial est actualisée
                         }
                     }
                 }
 
-                for (int j=0; j < m_ordre; ++j)
-                {
-                    poids2Tot=poids2Tot+distance[j];
-                    //if(j!=f)
-                    //std::cout<<"Sommet "<<j<<" distant de "<<distance[j]<<" par rapport au sommet "<<f<<std::endl;
-                }
-                //std::cout<<std::endl;
+/// --------------------------------- FIN DU CODE INSPIRé DU SITE ----------------------------------------------
 
+
+                for (int j=0; j < m_ordre; ++j)
+                    distanceTot=distanceTot+distance[j];        // Addition de la distance minimale trouvée et la distance totale
             }
-            poids1Tot=poids1Tot/2;
-            //std::cout<<poidsTot1<<" et "<<poidsTot2<<std::endl;
-            std::pair <float,float> pair1 = std::make_pair (idGraphe, poids1Tot);
-            std::pair <float,float> pair2 = std::make_pair (idGraphe, poids2Tot);
+            coutTot=coutTot/2;
+            std::pair <float,float> pair1 = std::make_pair (idGraphe, coutTot);
+            std::pair <float,float> pair2 = std::make_pair (idGraphe, distanceTot);
             triPoids1.push_back(pair1);
             triPoids2Temp.push_back(pair2);
         }
@@ -582,7 +563,7 @@ void Graphe::algoDijkstra()
     yActuel = triPoids2[0].second;     // yActuel est la valeur du poids2 correspondant au poid1 min
 
     int rang=0;
-    for(auto t1:triPoids1)
+    for(auto t1:triPoids1)                  // Ajout à la frontière de Pareto ou au nuage de points en fonction de la valeur des poids
     {
         if(t1.second != xMin)
         {
@@ -593,7 +574,7 @@ void Graphe::algoDijkstra()
                 pointPareto.push_back(t1.first);
                 pointPareto.push_back(t1.second);
                 pointPareto.push_back(yActuel);
-                m_frontiereParetoDijsktra.push_back(pointPareto);
+                m_frontiereParetoDijkstra.push_back(pointPareto);
                 pointPareto.clear();
             }
             else
@@ -601,7 +582,7 @@ void Graphe::algoDijkstra()
                 pointNuage.push_back(t1.first);
                 pointNuage.push_back(t1.second);
                 pointNuage.push_back(triPoids2[rang].second);
-                m_nuagePointsDijsktra.push_back(pointNuage);
+                m_nuagePointsDijkstra.push_back(pointNuage);
                 pointNuage.clear();
             }
         }
@@ -609,16 +590,16 @@ void Graphe::algoDijkstra()
         {
             if(triPoids2[rang].second < yActuel)
             {
-                while(m_frontierePareto.back()[1]==xMin)
+                while(m_frontiereParetoDijkstra.back()[1]==xMin)
                 {
-                    m_nuagePointsDijsktra.push_back(m_frontiereParetoDijsktra.back());
-                    m_frontiereParetoDijsktra.pop_back();
+                    m_nuagePointsDijkstra.push_back(m_frontiereParetoDijkstra.back());
+                    m_frontiereParetoDijkstra.pop_back();
                 }
                 yActuel = triPoids2[rang].second;
                 pointPareto.push_back(t1.first);
                 pointPareto.push_back(t1.second);
                 pointPareto.push_back(yActuel);
-                m_frontiereParetoDijsktra.push_back(pointPareto);
+                m_frontiereParetoDijkstra.push_back(pointPareto);
                 pointPareto.clear();
             }
             else if(triPoids2[rang].second == yActuel)
@@ -626,7 +607,7 @@ void Graphe::algoDijkstra()
                 pointPareto.push_back(t1.first);
                 pointPareto.push_back(t1.second);
                 pointPareto.push_back(yActuel);
-                m_frontiereParetoDijsktra.push_back(pointPareto);
+                m_frontiereParetoDijkstra.push_back(pointPareto);
                 pointPareto.clear();
             }
             else
@@ -634,19 +615,14 @@ void Graphe::algoDijkstra()
                 pointNuage.push_back(t1.first);
                 pointNuage.push_back(t1.second);
                 pointNuage.push_back(triPoids2[rang].second);
-                m_nuagePointsDijsktra.push_back(pointNuage);
+                m_nuagePointsDijkstra.push_back(pointNuage);
                 pointNuage.clear();
             }
         }
         ++rang;
     }
-
-    std::cout<<"Frontiere Pareto"<<std::endl;
-    for(int i=0; i<m_frontiereParetoDijsktra.size(); ++i)
-    {
-        std::cout<<"idGraphe : "<<m_frontiereParetoDijsktra[i][0]<<"  poidsTot1 : "<<m_frontiereParetoDijsktra[i][1]<<"  poidstot2 : "<<m_frontiereParetoDijsktra[i][2]<<std::endl;
-    }
 }
+
 
 /// _________________________________________________________________
 
