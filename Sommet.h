@@ -26,6 +26,7 @@ class Sommet
         int getMarque2(){return m_marque2;};        // Marque pour le poids 2
         void marquer1(){m_marque1=true;};
         void marquer2(){m_marque2=true;};
+        void demarquer2(){m_marque2=false;};
         int verifierCC() const;
         std::vector<const Sommet*> getVoisins() const {return m_voisins;};
         void setVoisins() {m_voisins.clear();};
