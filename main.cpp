@@ -38,11 +38,20 @@ void allegro()
 
 int main()
 {
+    /// ---------------- TEMPS D'AFFICHAGE DU MENU ALLEGRO (EN MODE RELEASE) -----------------------
+
+    /// - Pour un graphe de type Broadway : 0.08 s
+    /// - Pour un graphe de type Cubetown : 0.11 s
+    /// - Pour un graphe de type Triville : ~ 4 s
+    /// - Pour un graphe de type Manhattan : ~ 5 min
+
+
+
     std::clock_t c_start = std::clock();                // Début horloge temps cpu
     auto t_start = std::chrono::high_resolution_clock::now();       // Début horloge temps réel
 
 
-    Graphe graphe("broadway.txt", "broadway_weights_0.txt");
+    Graphe graphe("manhattan.txt", "manhattan_weights_0.txt");
     graphe.algoPrim();
     graphe.algoPareto();
     graphe.algoDijkstra();

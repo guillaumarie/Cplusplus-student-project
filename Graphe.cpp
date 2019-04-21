@@ -111,51 +111,51 @@ void Graphe::algoPrim()
 
     do //tant que tous les sommets ne sont pas tous découverts
     {
-        //parcourir toutes les aretes et garder celle qui a le plus petit poids parmi celles qui ont le sommet choisi comme extrémité
         Arete* meilleureArete=nullptr;
-        poids1 = 10000.0;
-        poids2 = 10000.0;
+        poids1 = 1000000.0;           // Initialisation des poids 1 et 2 à une très grande valeur
+        poids2 = 1000000.0;
 
 
         /// Parcours pour poids 1
 
-        for(auto j:m_aretes)
+        for(auto j:m_aretes)    //parcourir toutes les aretes et garder celle qui a le plus petit poids 1 parmi celles qui ont le sommet choisi comme extrémité
         {
             id1 = j->getId1(); //indice du sommet
             id2 = j->getId2();
 
-            if (   ( m_sommets[id1]->getMarque1() && !m_sommets[id2]->getMarque1())
+            if (   ( m_sommets[id1]->getMarque1() && !m_sommets[id2]->getMarque1())              // Si uniquement l'un des 2 sommets de l'arête est marqué
                     || ( m_sommets[id2]->getMarque1() && !m_sommets[id1]->getMarque1())  )
             {
-                if (j->getPoids1() < poids1)
+                if (j->getPoids1() < poids1)                // Et si le poids de l'arête est inférieur au poids1 (poids 1 minimal)
                 {
-                    poids1 = j->getPoids1();
-                    meilleureArete = j;
+                    poids1 = j->getPoids1();            // Le poids de l'arête devient le poids 1 minimal
+                    meilleureArete = j;             // Et l'arête étudiée devient la meilleure arête
                 }
             }
         }
 
-        id1 = meilleureArete->getId1();
+        id1 = meilleureArete->getId1();             // On prend les identifiants des sommets des extrêmités de la meilleure arête
         id2 = meilleureArete->getId2();
 
-        if (  m_sommets[id1]->getMarque1() && !m_sommets[id2]->getMarque1() )
+        if (  m_sommets[id1]->getMarque1() && !m_sommets[id2]->getMarque1() )       // Si uniquement l'un des sommets a été découvert par Prim sur le poids 1
         {
-            m_sommets[id2]->marquer1();
+            m_sommets[id2]->marquer1();                                     // On marque l'autre comme découvert
         }
-        if (  m_sommets[id2]->getMarque1() && !m_sommets[id1]->getMarque1() )
+        if (  m_sommets[id2]->getMarque1() && !m_sommets[id1]->getMarque1() )       // Idem mais à l'inverse
         {
             m_sommets[id1]->marquer1();
         }
 
-        m_aretesPrim1.push_back(meilleureArete);
+        m_aretesPrim1.push_back(meilleureArete);            // On ajoute la meilleure arête au vecteur contenant les arêtes composant le graphe de Prim pour le poids 1
 
 
 
         /// Parcours pour poids 2
+        /// Commentaires et explications idem que pour Prim sur le poids 1
 
         for(auto j:m_aretes)
         {
-            id1 = j->getId1(); //indice du sommet
+            id1 = j->getId1();
             id2 = j->getId2();
 
             if (   ( m_sommets[id1]->getMarque2() && !m_sommets[id2]->getMarque2())
@@ -169,7 +169,6 @@ void Graphe::algoPrim()
             }
         }
 
-        // à ce niveau, meilleureArete est l'arete de poids min
         id1 = meilleureArete->getId1();
         id2 = meilleureArete->getId2();
 
@@ -185,12 +184,11 @@ void Graphe::algoPrim()
         m_aretesPrim2.push_back(meilleureArete);
 
 
-        // --- vérif sortie boucle while
         decouverts = true;
-        for(auto i:m_sommets) //on parcours tous les sommets
+        for(auto i:m_sommets) //on parcours tous les sommets afin de regarder lesquels sont marqués par Prim sur les poids 1 et 2
         {
             if(i->getMarque1() == false || i->getMarque2() == false)
-                decouverts = false; //si on en trouve un qui n'est pas marqué on passe le découvert total à false
+                decouverts = false;         //si on en trouve un qui n'est pas marqué on passe le découvert total à false
         }
         // --- fin vérif sortie boucle while
 
@@ -236,11 +234,12 @@ std::vector<Arete*> Graphe::getm_Arete()
 
 
 
-/// _______________________________ALGORITHME DE PARETO_____________________________
+/// ----------------------------------- ALGORITHME DE PARETO -------------------------------------------
 
-bool comp(const std::pair<float,float> &a, const std::pair<float,float> &b)     // Comparateur utilisé pour trié les poids à la fin de l'algorithme
+
+bool comp(const std::pair<float,float> &a, const std::pair<float,float> &b)     // Comparateur utilisé pour trié les poids à la fin de l'algorithme de Pareto
 {
-    return a.second < b.second;
+    return a.second < b.second;                 // On classe les poids dans l'ordre croissant (2èmes éléments des pairs (id/poids)
 }
 
 void Graphe::algoPareto()
@@ -351,18 +350,18 @@ void Graphe::algoPareto()
     yActuel = triPoids2[0].second;     // yActuel est la valeur du poids2 correspondant au poid1 min
 
     int rang=0;
-    for(auto t1:triPoids1)
+    for(auto t1:triPoids1)          // Parcours des poids1
     {
-        if(t1.second != xMin)
+        if(t1.second != xMin)           // Si le poids 1 n'est pas minimal
         {
-            if(triPoids2[rang].second < yActuel)
+            if(triPoids2[rang].second < yActuel)        // Si le poids 2 lui correspondant est inférieur au minimum local yActuel
             {
                 yActuel = triPoids2[rang].second;
                 xMin = t1.second;
                 pointPareto.push_back(t1.first);
                 pointPareto.push_back(t1.second);
                 pointPareto.push_back(yActuel);
-                m_frontierePareto.push_back(pointPareto);
+                m_frontierePareto.push_back(pointPareto);       // On ajoute les coordonnées et l'identifiant aux frontières de Pareto
                 pointPareto.clear();
             }
             else
@@ -370,7 +369,7 @@ void Graphe::algoPareto()
                 pointNuage.push_back(t1.first);
                 pointNuage.push_back(t1.second);
                 pointNuage.push_back(triPoids2[rang].second);
-                m_nuagePoints.push_back(pointNuage);
+                m_nuagePoints.push_back(pointNuage);                // Sinon, c'est un graphe qui constitue le nuage
                 pointNuage.clear();
             }
         }
@@ -421,7 +420,7 @@ void Graphe::algoPareto()
 
 
 
-/// _______________________________ALGORITHME DE DIJKSTRA_____________________________
+/// --------------------------------- ALGORITHME DE DIJKSTRA ---------------------------------------------
 
 void Graphe::algoDijkstra()
 {
@@ -648,12 +647,13 @@ void Graphe::algoDijkstra()
 }
 
 
-/// _________________________________________________________________
 
-Graphe::~Graphe()
-{}
 
-/// _________________________________________________________________
+
+
+
+
+/// -------------------------------- Dessiner graphe de départ -------------------------------------------
 
 void Graphe::dessinerGraphe() //Dessiner les graphes
 {
@@ -694,10 +694,16 @@ void Graphe::dessinerGraphe() //Dessiner les graphes
 
 
 
+
+
+
+
+
+/// -------------------------------------- Dessiner le graphe correspondant à Prim sur le poids 1 ------------------------------------------------
+
+
 void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
 {
-    //float poids2Tot = 0;
-    //float poids1Tot =0;
     BITMAP* monbuffer = create_bitmap(1400,750);
     std::vector<Sommet*> vecteur_de_sommets;
 
@@ -708,8 +714,6 @@ void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
         id_1=  itA->getId1();
         int id_2;
         id_2=  itA->getId2();
-        //poids1Tot = poids1Tot+itA->getPoids1();
-        //poids2Tot = poids2Tot+itA->getPoids2();
 
         for(const auto& itt : m_sommets)
         {
@@ -738,10 +742,16 @@ void Graphe::dessinerPrim1() // pour dessinerl'arbre couvrant de poids 1 minimum
 }
 
 
+
+
+
+
+
+/// -------------------------------------- Dessiner le graphe correspondant à Prim sur le poids 2 ------------------------------------------------
+
+
 void Graphe::dessinerPrim2() // pour dessinerl'arbre couvrant de poids 1 minimum
 {
-    //float poids2Tot = 0;
-    //float poids1Tot =0;
     BITMAP* monbuffer = create_bitmap(1400,750);
     std::vector<Sommet*> vecteur_de_sommets;
     for(const auto& itA : m_aretesPrim2)
@@ -750,8 +760,6 @@ void Graphe::dessinerPrim2() // pour dessinerl'arbre couvrant de poids 1 minimum
         id_1=  itA->getId1();
         int id_2;
         id_2=  itA->getId2();
-        //poids1Tot = poids1Tot+itA->getPoids1();
-        //poids2Tot = poids2Tot+itA->getPoids2();
 
         for(const auto& itt : m_sommets)
         {
@@ -780,6 +788,14 @@ void Graphe::dessinerPrim2() // pour dessinerl'arbre couvrant de poids 1 minimum
     }
 
 }
+
+
+
+
+
+
+/// ----------------------------------- Dessiner rapport coût1/coût2 (Méthode brut-force) ---------------------------------
+
 void Graphe::dessinerPareto(std::vector<std::vector<float>> frontierePareto,std::vector<std::vector<float>>nuagePoints)
 {
     std::vector<float> tmp;
@@ -796,15 +812,21 @@ void Graphe::dessinerPareto(std::vector<std::vector<float>> frontierePareto,std:
     blit(monbuffer1,screen,0,0,0,0,1400,750);
     for(auto coords : nuagePoints)
     {
-        circlefill(monbuffer1,20+((max_coor*coords[1])/100)*10,730-(coords[2]*5),2,makecol(255,0,0));
+        circlefill(monbuffer1,20+((max_coor*coords[1])/100)*10,730-(coords[2]*5),2,makecol(255,0,0));       // On dessine tous les points du nuage de points
     }
     for(auto coor : frontierePareto)
     {
-        circlefill(monbuffer1,20+((max_coor*coor[1])/100)*10,730-(coor[2]*5),3,makecol(0,255,0));
+        circlefill(monbuffer1,20+((max_coor*coor[1])/100)*10,730-(coor[2]*5),3,makecol(0,255,0));         // On dessine tous les points de la frontière de Pareto
     }
     blit(monbuffer1,screen,0,0,0,0,1400,750);
 
 }
+
+
+
+
+
+/// ------------------------------ Dessiner rapport coût/durée pour Dijkstra -------------------------------------------------------
 
 void Graphe::dessinerParetoDijkstra (std::vector<std::vector<float>> frontierePareto_,std::vector<std::vector<float>>nuagePoints_)
 {
@@ -822,13 +844,22 @@ void Graphe::dessinerParetoDijkstra (std::vector<std::vector<float>> frontierePa
     blit(monbuffer1,screen,0,0,0,0,1400,750);
     for(auto coords : nuagePoints_)
     {
-        circlefill(monbuffer1,20+((max_coor*coords[1]/150)*10),730-((coords[2]*4)/60),2,makecol(255,0,0));
+        circlefill(monbuffer1,20+((max_coor*coords[1]/150)*10),730-((coords[2]*4)/60),2,makecol(255,0,0));       // On dessine tous les points du nuage de points
     }
     for(auto coor : frontierePareto_)
     {
-       circlefill(monbuffer1,20+((max_coor*coor[1]/150)*10),730-((coor[2]*4)/60),3 ,makecol(0,255,0));
+       circlefill(monbuffer1,20+((max_coor*coor[1]/150)*10),730-((coor[2]*4)/60),3 ,makecol(0,255,0));         // On dessine tous les points de la frontière de Pareto
     }
 
     blit(monbuffer1,screen,0,0,0,0,1400,750);
 
 }
+
+
+
+/// _________________________________________________________________
+
+Graphe::~Graphe()
+{}
+
+/// _________________________________________________________________
